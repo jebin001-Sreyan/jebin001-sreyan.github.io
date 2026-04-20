@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information Theory Flashcards — saimajebin.org</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:      #1C1C2A;
+    --ocean:    #1A6B7B;
+    --ocean-lt: #2A8FA2;
+    --cream:    #F6F2EB;
+    --cream2:   #EDE8DF;
+    --amber:    #B8722E;
+    --sub:      #888896;
+    --rule:     rgba(28,28,42,0.12);
+    --back-01:  #1A3A4A;
+    --back-02:  #1F1A2E;
+    --back-03:  #2C1A0E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.25rem 5rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    max-width: 680px;
+    width: 100%;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.5rem;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.9rem, 5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 0.4rem;
+  }
+
+  header h1 em { color: var(--ocean); font-style: italic; }
+
+  header p {
+    font-size: 0.86rem;
+    color: var(--sub);
+    font-style: italic;
+  }
+
+  /* ── INTRO BANNER ── */
+  .intro-banner {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 12px;
+    padding: 1.3rem 1.6rem;
+    margin: 0 auto 2.8rem;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .intro-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    line-height: 1.65;
+    color: #d8d4cc;
+    margin-bottom: 0.5rem;
+  }
+
+  .intro-bn {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.87rem;
+    color: var(--amber);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+  }
+
+  .intro-tts {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  /* ── CARD WRAPPER — fixed height, nothing leaks ── */
+  .card-wrap {
+    perspective: 1200px;
+    height: 540px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+    transform-style: preserve-3d;
+  }
+
+  .card-wrap.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  /* ── BOTH FACES: absolutely fill the wrapper, overflow hidden ── */
+  .card-front,
+  .card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.5rem 1.2rem;
+    overflow: hidden;            /* hard wall — text cannot escape */
+    box-shadow: 0 4px 24px rgba(28,28,42,0.09);
+  }
+
+  /* ── FRONT ── */
+  .card-front {
+    background: var(--cream2);
+    border: 1.5px solid var(--rule);
+  }
+
+  .card-wrap:nth-child(1) .card-front { border-top: 3px solid var(--ocean); }
+  .card-wrap:nth-child(2) .card-front { border-top: 3px solid var(--amber); }
+  .card-wrap:nth-child(3) .card-front { border-top: 3px solid #7B5EA7; }
+
+  .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .card-term {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .card-term-bn {
+    font-size: 0.88rem;
+    color: var(--ocean);
+    font-style: italic;
+    line-height: 1.4;
+    margin-bottom: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .card-equation {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    background: var(--ink);
+    color: #EBF5F7;
+    padding: 0.55rem 0.9rem;
+    border-radius: 8px;
+    margin-bottom: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  /* physics text: scrolls if it overflows */
+  .card-physics {
+    font-size: 0.84rem;
+    line-height: 1.65;
+    color: #444455;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(28,28,42,0.15) transparent;
+    padding-right: 0.2rem;
+  }
+
+  .card-hint {
+    font-size: 0.68rem;
+    color: var(--sub);
+    text-align: center;
+    margin-top: 0.8rem;
+    letter-spacing: 0.05em;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  /* ── BACK ── */
+  .card-back {
+    transform: rotateY(180deg);
+    border: 1.5px solid rgba(255,255,255,0.06);
+    color: var(--cream);
+  }
+
+  .card-wrap:nth-child(1) .card-back { background: var(--back-01); }
+  .card-wrap:nth-child(2) .card-back { background: var(--back-02); }
+  .card-wrap:nth-child(3) .card-back { background: var(--back-03); }
+
+  .back-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ocean-lt);
+    margin-bottom: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  /* scrollable area on back — philosophy + Bengali */
+  .back-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.3rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+
+  .back-scroll::-webkit-scrollbar { width: 3px; }
+  .back-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+  }
+
+  .back-philosophy {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.87rem;
+    line-height: 1.72;
+    color: #d8d4cc;
+    margin-bottom: 0.85rem;
+  }
+
+  .back-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 0.85rem;
+  }
+
+  .back-bn {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.84rem;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--amber);
+  }
+
+  /* ── TTS BAR ── */
+  .tts-bar {
+    display: flex;
+    gap: 0.45rem;
+    margin-top: 0.9rem;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .tts-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.32rem 0.7rem;
+    border-radius: 6px;
+    border: 1.5px solid var(--ocean-lt);
+    background: transparent;
+    color: var(--ocean-lt);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .tts-btn:hover { background: var(--ocean-lt); color: #fff; }
+  .tts-btn.stop  { border-color: var(--amber); color: var(--amber); }
+  .tts-btn.stop:hover { background: var(--amber); color: #fff; }
+
+  .tts-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.3);
+    margin-left: auto;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 4rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--sub);
+  }
+
+  footer a { color: var(--ocean); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">saimajebin.org · Information Theory</p>
+  <h1>Physics as <em>Philosophy</em></h1>
+  <p>Click any card to flip · TTS in English &amp; বাংলা</p>
+</header>
+
+<div class="intro-banner">
+  <div class="intro-en">The universe is noise; your mind is the filter. This site is designed to amplify the signal.</div>
+  <div class="intro-bn">মহাবিশ্ব কেবলই কোলাহল; আপনার মন হলো তার ফিল্টার। এই সাইটটি তৈরি করা হয়েছে সেই আসল সংকেত বা সিগন্যালকে খুঁজে পাওয়ার জন্য।</div>
+  <div class="intro-tts">
+    <button class="tts-btn" onclick="speakIntro('en-US')">▶ EN</button>
+    <button class="tts-btn" onclick="speakIntro('bn-BD')">▶ বাংলা</button>
+    <button class="tts-btn stop" onclick="window.speechSynthesis.cancel()">■ Stop</button>
+  </div>
+</div>
+
+<div class="grid" id="cardGrid"></div>
+
+<footer>
+  <p>saimajebin.org · Fluid Mechanics Made Easy · © Saima Jebin 2025</p>
+  <p style="margin-top:0.4rem;"><a href="https://saimajebin.org">↩ Back to site</a></p>
+</footer>
+
+<script>
+const intro = {
+  en: "The universe is noise; your mind is the filter. This site is designed to amplify the signal.",
+  bn: "মহাবিশ্ব কেবলই কোলাহল; আপনার মন হলো তার ফিল্টার। এই সাইটটি তৈরি করা হয়েছে সেই আসল সংকেত বা সিগন্যালকে খুঁজে পাওয়ার জন্য।"
+};
+
+const cards = [
+  {
+    num: "01 / 03",
+    term: "Entropy",
+    termBn: "এনট্রপি — ডিফল্ট বিশৃঙ্খলা",
+    equation: "S = k_B · ln(Ω)",
+    frontNote: "Tap to reveal the tax on excellence →",
+    physics: "Entropy measures the number of ways a system can be disordered. Since there are always more ways to be messy than to be organized, entropy naturally increases in any closed system.",
+    philosophy: "Order is expensive; chaos is free. Without constant energy, a garden becomes a thicket and a sharp mind becomes a collection of clichés. If you aren't actively building, the universe is actively dismantling. Excellence is a fight against the second law.",
+    backBnText: "এনট্রপি হলো প্রকৃতির সেই ট্যাক্স যা সব কিছুকে বিশৃঙ্খলার দিকে টেনে নেয়। গুছিয়ে রাখার জন্য শক্তি লাগে, কিন্তু এলোমেলো হওয়াটা একদম ফ্রি। উৎকর্ষ হলো বিশৃঙ্খলার বিরুদ্ধে এক নিরন্তর যুদ্ধ।",
+    enText: "Entropy. S equals k B times the natural log of Omega. It is the universe's tax on excellence. Order is expensive; chaos is free. Without constant energy, a sharp mind becomes a collection of clichés. If you aren't actively building, the universe is actively dismantling."
+  },
+  {
+    num: "02 / 03",
+    term: "Signal-to-Noise",
+    termBn: "সিগন্যাল বনাম নয়েজ — মনোযোগের যুদ্ধ",
+    equation: "SNR = P_signal / P_noise",
+    frontNote: "Tap to filter the chatter →",
+    physics: "The Signal-to-Noise ratio determines if a message is intelligible. In a high-noise environment, the signal must be powerful, or the receiver must be perfectly tuned.",
+    philosophy: "We live in a noise-saturated world — most opinions are just echoes of echoes. Intelligence isn't the ability to hear everything; it's the clinical skill of ignoring what doesn't matter. A high SNR mind ignores the theater to find the truth.",
+    backBnText: "সিগন্যাল-টু-নয়েজ রেশিও। পৃথিবী এখন অপ্রয়োজনীয় তথ্যে ঠাসা। বুদ্ধিমত্তা মানে সব কিছু শোনা নয়, বরং অপ্রয়োজনীয় শব্দকে উপেক্ষা করে আসল সত্যটি শোনার ক্ষমতা।",
+    enText: "Signal to Noise Ratio. S N R equals signal power divided by noise power. Intelligence is the clinical skill of ignoring what doesn't matter. Most opinions are just echoes of echoes. A high signal to noise mind ignores the theater to find the truth."
+  },
+  {
+    num: "03 / 03",
+    term: "Surprise",
+    termBn: "বিস্ময় — তথ্যের প্রকৃত মূল্য",
+    equation: "I(x) = −log₂ P(x)",
+    frontNote: "Tap to reveal the price of being real →",
+    physics: "Information is mathematically defined as surprise. The more likely an event is, the less information it carries. If you already know what will happen, the message contains zero information.",
+    philosophy: "Predictability is a form of silence. This is why small talk feels so empty — it is 100% predictable. To say something true is to risk being surprising. If your words don't make the median pause, you haven't actually shared any information.",
+    backBnText: "তথ্যের পরিমাণ নির্ভর করে তার নতুনত্বের ওপর। যা সবাই জানে তা তথ্য নয়, তা নীরবতা। সত্যিকারের কথা সবসময় একটু বিস্ময়কর হয়। যদি আপনার কথা কাউকে ভাবিয়ে না তোলে, তবে আপনি আসলে কিছুই বলেননি।",
+    enText: "Surprise, or information content. I of x equals negative log base two of the probability of x. Predictability is a form of silence. To say something true is to risk being surprising. If your words don't make the median pause, you haven't shared any information."
+  }
+];
+
+function speakText(text, lang, statusEl) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang;
+  u.rate = 0.92;
+  if (statusEl) statusEl.textContent = "Reading…";
+  u.onend  = () => { if (statusEl) statusEl.textContent = "Done."; };
+  u.onerror = () => { if (statusEl) statusEl.textContent = "Error."; };
+  window.speechSynthesis.speak(u);
+}
+
+function speakIntro(lang) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(lang === 'bn-BD' ? intro.bn : intro.en);
+  u.lang = lang;
+  u.rate = 0.92;
+  window.speechSynthesis.speak(u);
+}
+
+function buildCard(c, i) {
+  const wrap = document.createElement('div');
+  wrap.className = 'card-wrap';
+
+  wrap.innerHTML = `
+    <div class="card-inner">
+      <div class="card-front">
+        <div class="card-num">${c.num}</div>
+        <div class="card-term">${c.term}</div>
+        <div class="card-term-bn">${c.termBn}</div>
+        <div class="card-equation">${c.equation}</div>
+        <div class="card-physics">${c.physics}</div>
+        <div class="card-hint">${c.frontNote}</div>
+      </div>
+      <div class="card-back">
+        <div class="back-label">Philosophy + বাংলা</div>
+        <div class="back-scroll">
+          <div class="back-philosophy">${c.philosophy}</div>
+          <hr class="back-divider">
+          <div class="back-bn">${c.backBnText}</div>
+        </div>
+        <div class="tts-bar">
+          <button class="tts-btn" id="en-${i}">▶ EN</button>
+          <button class="tts-btn" id="bn-${i}">▶ বাংলা</button>
+          <button class="tts-btn stop" id="stop-${i}">■ Stop</button>
+          <span class="tts-status" id="status-${i}"></span>
+        </div>
+      </div>
+    </div>`;
+
+  wrap.querySelector('.card-inner').addEventListener('click', (e) => {
+    if (e.target.closest('.tts-bar')) return;
+    wrap.classList.toggle('flipped');
+  });
+
+  const s = wrap.querySelector(`#status-${i}`);
+  wrap.querySelector(`#en-${i}`).addEventListener('click',   e => { e.stopPropagation(); speakText(c.enText,     'en-US', s); });
+  wrap.querySelector(`#bn-${i}`).addEventListener('click',   e => { e.stopPropagation(); speakText(c.backBnText, 'bn-BD', s); });
+  wrap.querySelector(`#stop-${i}`).addEventListener('click', e => { e.stopPropagation(); window.speechSynthesis.cancel(); s.textContent = "Stopped."; });
+
+  return wrap;
+}
+
+const grid = document.getElementById('cardGrid');
+cards.sort((a, b) => a.term.localeCompare(b.term));
+cards.forEach((c, i) => grid.appendChild(buildCard(c, i)));
+</script>
+</body>
+</html>
