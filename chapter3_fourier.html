@@ -315,6 +315,41 @@ em {
     <div class="chapter-subtitle">A Fourier Story</div>
   </header>
 
+  <audio id="chapter-audio" loop>
+  <source src="audio/the-godfather-music--best-version.mp3" type="audio/mpeg" />
+</audio>
+
+<button onclick="toggleMusic()" id="music-btn"
+  style="
+    background: none;
+    border: 1px solid #A07050;
+    color: #A07050;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.80rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 1.0rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    border-radius: 2px;
+  ">
+  ♩ Play Music
+</button>
+
+<script>
+function toggleMusic() {
+  const audio = document.getElementById('chapter-audio');
+  const btn   = document.getElementById('music-btn');
+  if (audio.paused) {
+    audio.play();
+    btn.textContent = '♩ Pause Music';
+  } else {
+    audio.pause();
+    btn.textContent = '♩ Play Music';
+  }
+}
+</script>
+
   <!-- ── Opening ───────────────────────────────────────── -->
   <p>Close your eyes. Listen to a piano playing a single key. Simple, clean, one thing.</p>
 
