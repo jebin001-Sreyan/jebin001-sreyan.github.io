@@ -485,6 +485,96 @@ function toggleMusic() {
 
   <p>If your brain already understands Fourier analysis, the mathematics is just your pen catching up to what your ears already know.</p>
 
+<!-- ── What Is Fourier Analysis? ─────────────────────────── -->
+<h2>What Is Fourier Analysis?</h2>
+
+<p>Joseph Fourier was a French mathematician who, in 1822, published 
+one of the most quietly revolutionary ideas in the history of science. 
+His claim: that <em>any</em> signal — no matter how complicated, no 
+matter how irregular — can be written exactly as a sum of pure sine 
+and cosine waves, each with its own frequency and amplitude. Not 
+approximately. <em>Exactly.</em> The great Lagrange rejected it at 
+first. Fourier was right.</p>
+
+<p>Think about what that means for a moment. You record the sound of 
+a thunderstorm. Chaotic, violent, seemingly structureless. Fourier 
+says: hiding inside that chaos is a clean, exact list of frequencies 
+— each one a pure tone, each with a definite loudness. Find the list, 
+and you understand the storm. That is the promise of Fourier analysis, 
+and it keeps its promise every single time.</p>
+
+<p>The mathematical tool that finds that list is the 
+<strong>Fourier transform</strong>:</p>
+
+<div class="eq-block">
+$$\tilde{f}(\omega) = \int_{-\infty}^{\infty} f(t)\, e^{-i\omega t}\, dt$$
+</div>
+
+<p>Do not let the integral intimidate you — it is asking one simple 
+question, once for every possible frequency $\omega$: <em>how much of 
+this frequency is hiding inside the signal $f(t)$?</em> The term 
+$e^{-i\omega t}$ is a probe — it oscillates at frequency $\omega$, 
+and when you multiply it against $f(t)$ and integrate over all time, 
+you get a large number if $f(t)$ vibrates strongly at that frequency, 
+and nearly zero if it does not. Run this for every $\omega$, and you 
+have the full inventory — every rhythm present in the data, and how 
+loudly each one is speaking.</p>
+
+<p>To get back from frequency to time, you run the inverse:</p>
+
+<div class="eq-block">
+$$f(t) = \frac{1}{2\pi}\int_{-\infty}^{\infty} \tilde{f}(\omega)\, 
+e^{i\omega t}\, d\omega$$
+</div>
+
+<p>This says: rebuild $f(t)$ by adding up all the pure oscillations, 
+each weighted by how much of it is present. Together, these two 
+equations form a <strong>transform pair</strong> — a lossless, exact, 
+reversible translation between two equally complete descriptions of 
+the same reality. Not a single bit of information is created or 
+destroyed. You are not approximating anything. You are simply 
+changing the language.</p>
+
+<p>In practice, the quantity physicists reach for is the 
+<strong>power spectrum</strong>:</p>
+
+<div class="eq-block">$$S(\omega) = |\tilde{f}(\omega)|^2$$</div>
+
+<p>Real. Non-negative. Directly readable. It tells you how much energy 
+the signal carries at each frequency. A sharp peak means the system 
+has a natural mode there — it loves to oscillate at that rhythm. 
+A broad smeared peak means the same mode exists but is damped, 
+bleeding energy fast. A flat, featureless spectrum means pure random 
+noise — no preferred frequency, no hidden structure, nothing to read.</p>
+
+<div class="pull">
+Why do we perform Fourier analysis? Because the time domain and the 
+frequency domain reveal completely different things about the same 
+system. The time domain tells you the history — what happened, and 
+when. The frequency domain tells you the character — what the system 
+is built from, and what it will do when disturbed.
+</div>
+
+<p>Here is a small, concrete example. Drop a stone into still water. 
+The ripples spread outward. In the time domain, you see a complicated 
+undulating surface, rising and falling, impossible to read by eye. 
+In the frequency domain, you see something clean: the energy is 
+concentrated at the frequencies dictated by the depth of the water 
+and the size of the disturbance. The chaos in the time domain was 
+never fundamental — it was just many simple waves, all talking 
+at once. Fourier analysis is how you hear each voice separately.</p>
+
+<p>Applied to Lake Superior: years of raw current velocity 
+measurements look like nothing but noise in the time domain — a 
+jagged, restless, seemingly structureless record. Transform that 
+record into the frequency domain and a sharp peak appears at exactly 
+1.43 cycles per day, corresponding to a period of 16.8 hours. That 
+is the inertial frequency — the rhythm the lake falls into every 
+time a storm disturbs it, the fingerprint of the Earth's own 
+rotation encoded in the motion of the water. The Fourier transform 
+did not add that information. It was always there. The transform 
+simply made it readable.</p>
+  
   <!-- ── Part III ────────────────────────────────────────── -->
   <h2>Making It Exact: The Transform</h2>
 
@@ -677,10 +767,7 @@ function toggleMusic() {
     <p>From the mass on a spring, to the chord on a piano, to the vowel in a human voice, to the slow inertial rhythm of a lake responding to a storm — it is the same story, the same mathematics, the same seven-step vocabulary. The costumes change. The physics does not.</p>
   </div>
 
-  <!-- ── Next Chapter ───────────────────────────────────── -->
-  <div class="next-chapter">
-    <em>Next:</em> we keep this machinery and walk into stochastic territory — what happens when the forcing is random? We will derive the power spectrum of a noisy oscillator, meet the Ornstein-Uhlenbeck process, and show that noise with structure is a very different animal from noise without it — and that the difference is legible, precisely, in the frequency domain.
-  </div>
+  
 
 </div><!-- end .page-wrap -->
 </body>
