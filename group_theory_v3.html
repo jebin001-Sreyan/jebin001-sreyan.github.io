@@ -489,23 +489,6 @@ $$u = \frac{4km \pm \sqrt{16k^2m^2 - 12k^2m^2}}{2m^2} = \frac{4km \pm 2km}{2m^2}
 $$\omega_1 = \sqrt{\frac{k}{m}} \qquad \omega_2 = \sqrt{\frac{3k}{m}}$$
 </div>
 
-<h3>Finding the Mode Shapes</h3>
-
-<p>For $\omega_1$, substitute $m\omega_1^2 = k$ back into the first algebraic equation:</p>
-
-<div class="eq">
-$$(2k - k)A_1 - kA_2 = 0 \implies A_1 = A_2$$
-</div>
-
-<p>Both masses move in the same direction with the same amplitude. The middle spring neither stretches nor compresses.</p>
-
-<p>For $\omega_2$, substitute $m\omega_2^2 = 3k$:</p>
-
-<div class="eq">
-$$(2k - 3k)A_1 - kA_2 = 0 \implies A_1 = -A_2$$
-</div>
-
-<p>The masses move in opposite directions with equal amplitudes. The middle spring oscillates at maximum compression and extension.</p>
 
 <div class="summary-box">
   <strong>What brute force cost:</strong> Newton's laws → exponential guess → matrix form → determinant → polynomial expansion → quadratic formula → back-substitution. Eight algebraic steps to reach two frequencies and two mode shapes. For three masses this requires a $3 \times 3$ determinant. For ten masses, a $10 \times 10$ determinant. The method scales badly and gives numbers without explaining why those numbers have the values they do.
@@ -572,6 +555,25 @@ $$\boxed{m\ddot{x} + 3kx = 0} \qquad \Rightarrow \qquad \omega_2 = \sqrt{\frac{3
 <div class="summary-box">
   <strong>What symmetry cost:</strong> Recognize the swap symmetry → write $X$ and $x$ → add equations → subtract equations → done. Four conceptual moves to reach the same two frequencies, with physical understanding included at no extra charge.
 </div>
+
+  
+<h2>Finding the Mode Shapes</h2>
+
+<p>For $\omega_1$, substitute $m\omega_1^2 = k$ back into the first algebraic equation:</p>
+
+<div class="eq">
+$$(2k - k)A_1 - kA_2 = 0 \implies A_1 = A_2$$
+</div>
+
+<p>Both masses move in the same direction with the same amplitude. The middle spring neither stretches nor compresses.</p>
+
+<p>For $\omega_2$, substitute $m\omega_2^2 = 3k$:</p>
+
+<div class="eq">
+$$(2k - 3k)A_1 - kA_2 = 0 \implies A_1 = -A_2$$
+</div>
+
+<p>The masses move in opposite directions with equal amplitudes. The middle spring oscillates at maximum compression and extension.</p>
 
 
 <!-- ============================================================
