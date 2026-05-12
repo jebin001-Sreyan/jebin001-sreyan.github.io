@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Theory: Two Masses on Springs</title>
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    packages: {'[+]': ['ams']}
+  },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre']
+  }
+};
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── Palette ──────────────────────────────────────────
+     Background  : #FAF8F5  (Medium-level light cream)
+     Body text   : #292929  (Medium's actual text colour)
+     Headings    : #111111  (near black)
+     Coffee accent: #7B5540 (warm dark coffee)
+     Light coffee : #C9A882 (for borders, dividers)
+     Block bg    : #F2EEE8  (one step warmer than page)
+  ─────────────────────────────────────────────────────── */
+
+  body {
+    font-family: 'Comic Sans MS', sans-serif;
+    font-style: normal;
+    background-color: #FAF8F5;
+    color: #292929;
+    line-height: 1.9;
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 60px 30px;
+    font-size: 18px;
+  }
+
+  .back-btn {
+    display: inline-block;
+    margin-bottom: 44px;
+    padding: 8px 18px;
+    background-color: #7B5540;
+    color: #FAF8F5;
+    text-decoration: none;
+    border-radius: 20px;
+    font-family: 'Comic Sans MS', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.3px;
+  }
+  .back-btn:hover { background-color: #5e3e2c; }
+
+  h1 {
+    font-family: 'Comic Sans MS', sans-serif;
+    font-size: 2.4em;
+    color: #111111;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-family: 'Comic Sans MS', sans-serif;
+    font-size: 1.55em;
+    color: #111111;
+    margin-top: 60px;
+    margin-bottom: 24px;
+    padding-bottom: 0;
+    border-bottom: none;
+    border-left: 4px solid #7B5540;
+    padding-left: 14px;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-family: 'Comic Sans MS', sans-serif;
+    font-size: 1.15em;
+    color: #111111;
+    margin-top: 38px;
+    margin-bottom: 14px;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  p { margin-bottom: 20px; }
+
+  .eq {
+    background-color: #F2EEE8;
+    border-left: 4px solid #C9A882;
+    padding: 18px 24px;
+    margin: 24px 0;
+    overflow-x: auto;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .eq-step {
+    background-color: #EDE8DF;
+    border-left: 4px solid #7B5540;
+    padding: 14px 20px;
+    margin: 14px 0;
+    overflow-x: auto;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .diagram-box {
+    background-color: #F2EEE8;
+    border: 1px solid #C9A882;
+    border-radius: 6px;
+    padding: 28px;
+    margin: 32px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    overflow-x: auto;
+    text-align: center;
+    color: #292929;
+    font-style: normal;
+  }
+  .diagram-caption {
+    font-family: 'Comic Sans MS', sans-serif;
+    font-size: 14px;
+    color: #7B5540;
+    margin-top: 14px;
+    font-style: normal;
+  }
+
+  .callout {
+    background-color: #F2EEE8;
+    border-left: 4px solid #C9A882;
+    border-radius: 0 4px 4px 0;
+    padding: 20px 24px;
+    margin: 28px 0;
+    color: #292929;
+  }
+
+  blockquote {
+    border-left: 4px solid #7B5540;
+    padding-left: 22px;
+    margin: 32px 0;
+    color: #292929;
+    font-size: 1.1em;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 15px;
+  }
+  th {
+    background-color: #7B5540;
+    color: #FAF8F5;
+    padding: 14px 16px;
+    text-align: left;
+    font-family: 'Comic Sans MS', sans-serif;
+    font-style: normal;
+    font-size: 15px;
+  }
+  td {
+    border: 1px solid #C9A882;
+    padding: 12px 16px;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background-color: #F2EEE8; }
+
+  .keyword-box {
+    border: 1px solid #C9A882;
+    border-radius: 6px;
+    padding: 32px;
+    margin: 45px 0;
+    background-color: #F2EEE8;
+  }
+  .kw-item {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #C9A882;
+  }
+  .kw-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .kw-title {
+    font-weight: 700;
+    color: #7B5540;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }
+
+  strong { color: #111111; font-weight: 700; }
+  em { color: #7B5540; font-weight: 600; font-style: normal; }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid #C9A882;
+    margin: 55px 0;
+  }
+
+  .warning-box {
+    background-color: #EDE8DF;
+    border-left: 4px solid #7B5540;
+    border-radius: 0 4px 4px 0;
+    padding: 20px 24px;
+    margin: 30px 0;
+    color: #292929;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 30px 18px; font-size: 16px; }
+    h1 { font-size: 1.9em; }
+    h2 { font-size: 1.3em; }
+  }
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="history.back()">← Back</button>
+
+<h1>Group Theory: Two Masses on Springs</h1>
+
+<!-- ======================================================
+     SECTION 1 — THE PROBLEM
+     ====================================================== -->
+
+<h2>The Problem That Looks Complicated</h2>
+
+<p>Imagine you have already mastered simple harmonic motion. You know Hooke's law — pull a mass on a spring, it oscillates at a frequency that depends on the stiffness and the mass. That is old hat by now.</p>
+
+<p>But then someone hands you something new: two masses, connected to walls by springs, and connected to <em>each other</em> by another spring in the middle. They ask you to find the frequencies at which this system can vibrate.</p>
+
+<p>Your first instinct is to write Newton's second law for each mass. But something goes wrong immediately. The force on mass one depends on where mass two is, and the force on mass two depends on where mass one is. You cannot solve one equation without solving the other. They are tangled together.</p>
+
+<p>This is called a coupled system. And if you try to untangle it the obvious way — writing down the equations and grinding through the algebra — you will spend a long time computing matrices, determinants, and solving polynomial equations. It works. But it is painful. And once you see the elegant approach, you will never want to go back.</p>
+
+<div class="diagram-box">
+<pre>
+  Fixed Wall                                       Fixed Wall
+     |                                                  |
+     |    Spring k       Mass m     Spring k    Mass m  |    Spring k
+     |----/\/\/\/\/----[ M1 ]------/\/\/\/\/---[ M2 ]---|----/\/\/\/\/--|
+     |                                                  |
+                         x₁ →                  x₂ →
+
+     x₁ = displacement of Mass 1 from equilibrium (positive = right)
+     x₂ = displacement of Mass 2 from equilibrium (positive = right)
+</pre>
+<div class="diagram-caption">Two identical masses m, connected by three identical springs of stiffness k. Both walls are fixed.</div>
+</div>
+
+<!-- ======================================================
+     SECTION 2 — BRUTE FORCE
+     ====================================================== -->
+
+<h2>The Brute Force Approach: Full Computation</h2>
+
+<p>We are going to solve this completely from scratch, showing every algebraic step. This is not the fast way. That is the point. You need to see how long this takes so that when we find the shortcut using symmetry, you feel the difference in your bones.</p>
+
+<h3>Setting Up Newton's Second Law for Mass 1</h3>
+
+<p>Mass 1 feels two spring forces. The left wall spring pulls it back toward its rest position. The middle spring pushes or pulls it depending on the relative position of both masses.</p>
+
+<p>Force from left wall spring: $-k x_1$ (always pulls back toward zero)</p>
+
+<p>Force from middle spring: $-k(x_1 - x_2)$</p>
+
+<p>Why $-(x_1 - x_2)$? If mass 1 is further right than mass 2 (so $x_1 > x_2$), the middle spring is stretched, and it pulls mass 1 to the left — back toward mass 2. The force is negative (leftward). That sign is correct.</p>
+
+<p>Newton's second law for mass 1:</p>
+
+<div class="eq">
+$$m \ddot{x}_1 = -k x_1 - k(x_1 - x_2)$$
+</div>
+
+<p>Expand:</p>
+
+<div class="eq">
+$$m \ddot{x}_1 = -kx_1 - kx_1 + kx_2$$
+$$m \ddot{x}_1 = -2kx_1 + kx_2$$
+</div>
+
+<h3>Setting Up Newton's Second Law for Mass 2</h3>
+
+<p>Mass 2 feels the right wall spring and the same middle spring, now from the other side.</p>
+
+<p>Force from right wall spring: $-kx_2$</p>
+
+<p>Force from middle spring: $-k(x_2 - x_1)$</p>
+
+<p>If mass 2 is further right than mass 1, the middle spring pulls mass 2 back toward mass 1. Correct sign again.</p>
+
+<div class="eq">
+$$m \ddot{x}_2 = -kx_2 - k(x_2 - x_1)$$
+$$m \ddot{x}_2 = -2kx_2 + kx_1$$
+</div>
+
+<h3>The Coupled System</h3>
+
+<p>We now have two differential equations that are linked to each other:</p>
+
+<div class="eq">
+$$m \ddot{x}_1 + 2kx_1 - kx_2 = 0 \quad \text{(Equation 1)}$$
+$$m \ddot{x}_2 - kx_1 + 2kx_2 = 0 \quad \text{(Equation 2)}$$
+</div>
+
+<p>They cannot be solved independently. $x_1$ appears in Equation 2 and $x_2$ appears in Equation 1. This is the coupling.</p>
+
+<h3>Step 1: Assume Exponential Solutions</h3>
+
+<p>The standard technique for coupled linear oscillators is to assume that both masses oscillate at the same frequency $\omega$, but possibly with different amplitudes. We write:</p>
+
+<div class="eq">
+$$x_1(t) = A_1 \, e^{i\omega t}$$
+$$x_2(t) = A_2 \, e^{i\omega t}$$
+</div>
+
+<p>Here $A_1$ and $A_2$ are unknown amplitudes (which may be complex), and $\omega$ is the unknown angular frequency. The physical motion is the real part of these expressions. We use the complex exponential because it makes differentiation clean.</p>
+
+<h3>Step 2: Compute the Second Derivatives</h3>
+
+<p>Differentiate $x_1(t) = A_1 e^{i\omega t}$ once:</p>
+
+<div class="eq-step">
+$$\dot{x}_1 = A_1 \cdot i\omega \cdot e^{i\omega t}$$
+</div>
+
+<p>Differentiate again:</p>
+
+<div class="eq-step">
+$$\ddot{x}_1 = A_1 \cdot (i\omega)^2 \cdot e^{i\omega t} = A_1 \cdot (-\omega^2) \cdot e^{i\omega t} = -\omega^2 \, x_1$$
+</div>
+
+<p>Similarly:</p>
+
+<div class="eq-step">
+$$\ddot{x}_2 = -\omega^2 \, x_2$$
+</div>
+
+<p>This is the key simplification that makes the exponential guess powerful: each differentiation brings down a factor of $i\omega$, and the second derivative just replaces $\ddot{x}$ with $-\omega^2 x$. The differential equation becomes algebraic.</p>
+
+<h3>Step 3: Substitute Into the Equations of Motion</h3>
+
+<p>Substitute $\ddot{x}_1 = -\omega^2 x_1$ into Equation 1:</p>
+
+<div class="eq">
+$$m(-\omega^2 x_1) + 2kx_1 - kx_2 = 0$$
+$$-m\omega^2 x_1 + 2kx_1 - kx_2 = 0$$
+$$(2k - m\omega^2)x_1 - kx_2 = 0$$
+</div>
+
+<p>Now substitute $x_1 = A_1 e^{i\omega t}$ and $x_2 = A_2 e^{i\omega t}$. Since $e^{i\omega t} \neq 0$, we can divide it out:</p>
+
+<div class="eq">
+$$(2k - m\omega^2)A_1 - k A_2 = 0 \quad \cdots \text{(Algebraic Equation 1)}$$
+</div>
+
+<p>Substitute $\ddot{x}_2 = -\omega^2 x_2$ into Equation 2:</p>
+
+<div class="eq">
+$$m(-\omega^2 x_2) - kx_1 + 2kx_2 = 0$$
+$$-m\omega^2 x_2 - kx_1 + 2kx_2 = 0$$
+$$-kx_1 + (2k - m\omega^2)x_2 = 0$$
+</div>
+
+<p>Again divide out $e^{i\omega t}$:</p>
+
+<div class="eq">
+$$-k A_1 + (2k - m\omega^2) A_2 = 0 \quad \cdots \text{(Algebraic Equation 2)}$$
+</div>
+
+<h3>Step 4: Write as a Matrix Equation</h3>
+
+<p>Collect the two algebraic equations:</p>
+
+<div class="eq">
+$$(2k - m\omega^2) A_1 - k A_2 = 0$$
+$$-k A_1 + (2k - m\omega^2) A_2 = 0$$
+</div>
+
+<p>This is a homogeneous linear system. It can be written compactly in matrix form:</p>
+
+<div class="eq">
+$$\begin{pmatrix} 2k - m\omega^2 & -k \\ -k & 2k - m\omega^2 \end{pmatrix} \begin{pmatrix} A_1 \\ A_2 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+</div>
+
+<p>Call the matrix $\mathbf{M}$:</p>
+
+<div class="eq">
+$$\mathbf{M} = \begin{pmatrix} 2k - m\omega^2 & -k \\ -k & 2k - m\omega^2 \end{pmatrix}$$
+</div>
+
+<p>We want a non-trivial solution — one where $A_1$ and $A_2$ are not both zero (otherwise there is no oscillation). A homogeneous linear system has a non-trivial solution if and only if the matrix is singular, meaning its determinant is zero.</p>
+
+<div class="callout">
+  <strong>Key fact from linear algebra:</strong> The system $\mathbf{M}\mathbf{A} = 0$ has a non-zero solution if and only if $\det(\mathbf{M}) = 0$. This is called the characteristic equation.
+</div>
+
+<h3>Step 5: Compute the Determinant</h3>
+
+<p>For a $2 \times 2$ matrix $\begin{pmatrix} a & b \\ c & d \end{pmatrix}$, the determinant is $ad - bc$.</p>
+
+<p>Here $a = d = 2k - m\omega^2$ and $b = c = -k$. So:</p>
+
+<div class="eq">
+$$\det(\mathbf{M}) = (2k - m\omega^2)(2k - m\omega^2) - (-k)(-k)$$
+</div>
+
+<div class="eq-step">
+$$= (2k - m\omega^2)^2 - k^2$$
+</div>
+
+<p>Set this equal to zero:</p>
+
+<div class="eq">
+$$(2k - m\omega^2)^2 - k^2 = 0$$
+</div>
+
+<h3>Step 6: Expand the Characteristic Equation</h3>
+
+<p>Expand $(2k - m\omega^2)^2$ using $(a - b)^2 = a^2 - 2ab + b^2$ with $a = 2k$ and $b = m\omega^2$:</p>
+
+<div class="eq">
+$$(2k)^2 - 2(2k)(m\omega^2) + (m\omega^2)^2 - k^2 = 0$$
+$$4k^2 - 4km\omega^2 + m^2\omega^4 - k^2 = 0$$
+$$3k^2 - 4km\omega^2 + m^2\omega^4 = 0$$
+</div>
+
+<h3>Step 7: Solve for $\omega^2$</h3>
+
+<p>Let $u = \omega^2$ to make the structure clear. The equation becomes a quadratic in $u$:</p>
+
+<div class="eq">
+$$m^2 u^2 - 4km \, u + 3k^2 = 0$$
+</div>
+
+<p>Apply the quadratic formula $u = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ with $a = m^2$, $b = -4km$, $c = 3k^2$:</p>
+
+<div class="eq">
+$$u = \frac{4km \pm \sqrt{(4km)^2 - 4 \cdot m^2 \cdot 3k^2}}{2m^2}$$
+</div>
+
+<div class="eq-step">
+$$= \frac{4km \pm \sqrt{16k^2m^2 - 12k^2m^2}}{2m^2}$$
+</div>
+
+<div class="eq-step">
+$$= \frac{4km \pm \sqrt{4k^2m^2}}{2m^2}$$
+</div>
+
+<div class="eq-step">
+$$= \frac{4km \pm 2km}{2m^2}$$
+</div>
+
+<p>Two cases:</p>
+
+<p><strong>Case 1 — plus sign:</strong></p>
+
+<div class="eq">
+$$u_1 = \frac{4km + 2km}{2m^2} = \frac{6km}{2m^2} = \frac{3k}{m}$$
+$$\therefore \quad \omega_2^2 = \frac{3k}{m} \quad \Rightarrow \quad \omega_2 = \sqrt{\frac{3k}{m}}$$
+</div>
+
+<p><strong>Case 2 — minus sign:</strong></p>
+
+<div class="eq">
+$$u_2 = \frac{4km - 2km}{2m^2} = \frac{2km}{2m^2} = \frac{k}{m}$$
+$$\therefore \quad \omega_1^2 = \frac{k}{m} \quad \Rightarrow \quad \omega_1 = \sqrt{\frac{k}{m}}$$
+</div>
+
+<h3>Step 8: Find the Eigenvectors (Mode Shapes)</h3>
+
+<p>Now that we have the frequencies, we need the amplitude ratios $A_1/A_2$ for each. This tells us what the oscillation pattern looks like.</p>
+
+<p><strong>For $\omega_1 = \sqrt{k/m}$, substitute $m\omega_1^2 = k$ into Algebraic Equation 1:</strong></p>
+
+<div class="eq">
+$$(2k - m\omega_1^2) A_1 - k A_2 = 0$$
+$$(2k - k) A_1 - k A_2 = 0$$
+$$k A_1 - k A_2 = 0$$
+$$A_1 = A_2$$
+</div>
+
+<p>Both amplitudes are equal. The two masses move in the same direction with the same amplitude. This is the <em>symmetric mode</em>. The middle spring never stretches or compresses because both masses move identically. We can write the eigenvector as:</p>
+
+<div class="eq">
+$$\mathbf{v}_1 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$$
+</div>
+
+<p><strong>For $\omega_2 = \sqrt{3k/m}$, substitute $m\omega_2^2 = 3k$ into Algebraic Equation 1:</strong></p>
+
+<div class="eq">
+$$(2k - m\omega_2^2) A_1 - k A_2 = 0$$
+$$(2k - 3k) A_1 - k A_2 = 0$$
+$$-k A_1 - k A_2 = 0$$
+$$A_1 = -A_2$$
+</div>
+
+<p>The amplitudes are equal but opposite. When mass 1 moves right, mass 2 moves left by the same amount. This is the <em>antisymmetric mode</em>. The middle spring is compressed and stretched violently. The eigenvector is:</p>
+
+<div class="eq">
+$$\mathbf{v}_2 = \begin{pmatrix} 1 \\ -1 \end{pmatrix}$$
+</div>
+
+<h3>Step 9: Write the General Solution</h3>
+
+<p>The general motion of the system is any linear combination of the two normal modes:</p>
+
+<div class="eq">
+$$\begin{pmatrix} x_1(t) \\ x_2(t) \end{pmatrix} = C_1 \begin{pmatrix} 1 \\ 1 \end{pmatrix} \cos(\omega_1 t + \phi_1) + C_2 \begin{pmatrix} 1 \\ -1 \end{pmatrix} \cos(\omega_2 t + \phi_2)$$
+</div>
+
+<p>Written out explicitly:</p>
+
+<div class="eq">
+$$x_1(t) = C_1 \cos\!\left(\sqrt{\tfrac{k}{m}}\, t + \phi_1\right) + C_2 \cos\!\left(\sqrt{\tfrac{3k}{m}}\, t + \phi_2\right)$$
+$$x_2(t) = C_1 \cos\!\left(\sqrt{\tfrac{k}{m}}\, t + \phi_1\right) - C_2 \cos\!\left(\sqrt{\tfrac{3k}{m}}\, t + \phi_2\right)$$
+</div>
+
+<p>The four constants $C_1, C_2, \phi_1, \phi_2$ are determined by the initial positions and velocities of both masses.</p>
+
+<div class="warning-box">
+  <strong>What just happened:</strong> We started with two coupled differential equations. To find the natural frequencies we had to: guess exponential solutions, substitute and compute derivatives, rearrange into a matrix system, set the determinant to zero, expand and simplify a quartic polynomial, apply the quadratic formula, then go back and solve for the mode shapes separately. That is nine steps for a system with only two masses and three springs. For three masses it would be a $3\times3$ determinant. For ten masses, a $10\times10$ determinant. The computation grows fast.
+</div>
+
+<hr class="section-divider">
+
+<!-- ======================================================
+     SECTION 3 — ELEGANT APPROACH
+     ====================================================== -->
+
+<h2>The Elegant Approach: Use Symmetry</h2>
+
+<p>Now step back and look at the system again. There is nothing in the setup that prefers left over right. If you swap mass 1 and mass 2 — swap $x_1$ and $x_2$ — the physics is completely unchanged. The left spring becomes the right spring, the right spring becomes the left spring, and the middle spring is still the middle spring. Everything is identical.</p>
+
+<p>This is a symmetry. And symmetry is not a decoration. It is a computational tool.</p>
+
+<h3>The Symmetric and Antisymmetric Coordinates</h3>
+
+<p>Instead of working with $x_1$ and $x_2$, define two new coordinates that <em>respect</em> the symmetry:</p>
+
+<div class="eq">
+$$X = \frac{x_1 + x_2}{2} \qquad \text{(center of mass displacement)}$$
+$$x = x_1 - x_2 \qquad \text{(relative displacement)}$$
+</div>
+
+<p>These are not arbitrary. $X$ is symmetric under the swap $x_1 \leftrightarrow x_2$ (it does not change). And $x$ is antisymmetric under the same swap (it changes sign). The symmetry of the system forces these to be the natural coordinates.</p>
+
+<div class="diagram-box">
+<pre>
+  Original coordinates:         New coordinates:
+
+  x₁, x₂ (coupled)            X = (x₁ + x₂)/2   ← symmetric
+                                x = x₁ − x₂       ← antisymmetric
+
+  Two equations that mix        Two equations that
+  x₁ and x₂                   are completely independent
+</pre>
+<div class="diagram-caption">Symmetry tells us which coordinates to use. In the new coordinates, the problem decouples.</div>
+</div>
+
+<h3>Add the Two Equations of Motion</h3>
+
+<p>Take Equation 1 plus Equation 2:</p>
+
+<div class="eq">
+$$m\ddot{x}_1 + 2kx_1 - kx_2 = 0$$
+$$m\ddot{x}_2 - kx_1 + 2kx_2 = 0$$
+</div>
+
+<p>Adding:</p>
+
+<div class="eq">
+$$m(\ddot{x}_1 + \ddot{x}_2) + 2k(x_1 + x_2) - k(x_1 + x_2) = 0$$
+$$m(\ddot{x}_1 + \ddot{x}_2) + k(x_1 + x_2) = 0$$
+</div>
+
+<p>Since $X = (x_1 + x_2)/2$, we have $x_1 + x_2 = 2X$ and $\ddot{x}_1 + \ddot{x}_2 = 2\ddot{X}$:</p>
+
+<div class="eq">
+$$m (2\ddot{X}) + k(2X) = 0$$
+$$\boxed{m\ddot{X} + kX = 0}$$
+</div>
+
+<p>This is a simple harmonic oscillator for $X$ alone, with frequency:</p>
+
+<div class="eq">
+$$\omega_1 = \sqrt{\frac{k}{m}}$$
+</div>
+
+<h3>Subtract the Two Equations of Motion</h3>
+
+<p>Take Equation 1 minus Equation 2:</p>
+
+<div class="eq">
+$$m(\ddot{x}_1 - \ddot{x}_2) + 2k(x_1 - x_2) + k(x_1 - x_2) = 0$$
+$$m(\ddot{x}_1 - \ddot{x}_2) + 3k(x_1 - x_2) = 0$$
+</div>
+
+<p>Since $x = x_1 - x_2$ and $\ddot{x} = \ddot{x}_1 - \ddot{x}_2$:</p>
+
+<div class="eq">
+$$\boxed{m\ddot{x} + 3kx = 0}$$
+</div>
+
+<p>This is a simple harmonic oscillator for $x$ alone, with frequency:</p>
+
+<div class="eq">
+$$\omega_2 = \sqrt{\frac{3k}{m}}$$
+</div>
+
+<h3>What Just Happened</h3>
+
+<p>The two coupled equations became two independent equations. No matrices. No determinants. No quadratic formula. Just add, subtract, and read off the frequencies.</p>
+
+<p>We arrived at the same two frequencies $\omega_1 = \sqrt{k/m}$ and $\omega_2 = \sqrt{3k/m}$ — and we saw immediately why they exist:</p>
+
+<p>$\omega_1$ governs the center of mass. When both masses move together, the effective spring constant is just $k$ (the middle spring does nothing).</p>
+
+<p>$\omega_2$ governs the relative motion. When masses move apart, they compress or stretch the middle spring, which contributes an extra $2k$ to the restoring force. The effective spring constant is $k + 2k = 3k$.</p>
+
+<p>The symmetry did not just save computation. It gave us physical understanding that the brute force method buried under algebra.</p>
+
+<hr class="section-divider">
+
+<!-- ======================================================
+     SECTION 4 — COMPARISON TABLE
+     ====================================================== -->
+
+<h2>Comparing the Two Paths</h2>
+
+<table>
+  <tr>
+    <th>Step</th>
+    <th>Brute Force Method</th>
+    <th>Symmetry Method</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Write Newton's laws for $x_1$, $x_2$</td>
+    <td>Write Newton's laws for $x_1$, $x_2$</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Guess $x_i = A_i e^{i\omega t}$, compute derivatives</td>
+    <td>Recognize left-right symmetry</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Substitute, rearrange into matrix system</td>
+    <td>Define $X = (x_1+x_2)/2$, $x = x_1 - x_2$</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Compute $2\times 2$ determinant</td>
+    <td>Add equations → equation for $X$ alone</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>Expand $(2k - m\omega^2)^2 - k^2 = 0$</td>
+    <td>Subtract equations → equation for $x$ alone</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>Solve quadratic: $m^2\omega^4 - 4km\omega^2 + 3k^2 = 0$</td>
+    <td>Read off two frequencies directly</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>Find eigenvectors by back-substitution</td>
+    <td>Mode shapes are already built into $X$ and $x$</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>Assemble general solution</td>
+    <td>Invert coordinates to get $x_1(t)$, $x_2(t)$</td>
+  </tr>
+  <tr>
+    <td><strong>Total</strong></td>
+    <td><strong>~9 steps, significant algebra</strong></td>
+    <td><strong>Add, subtract, done</strong></td>
+  </tr>
+</table>
+
+<p>For two masses, the difference is meaningful but manageable. For ten masses, the brute force method demands a $10 \times 10$ determinant. That is a calculation that would fill pages. The symmetry method still gives you the answer by inspection.</p>
+
+<!-- ======================================================
+     SECTION 5 — WHAT IS GROUP THEORY
+     ====================================================== -->
+
+<h2>What Is Group Theory, Really?</h2>
+
+<p>After working through this problem both ways, here is what group theory actually is, without the fancy ceremonial language:</p>
+
+<blockquote>Group theory is a set of tools for identifying symmetries in physical systems and using those symmetries to convert hard problems into easy ones.</blockquote>
+
+<p>In the coupled oscillator problem, the symmetry was left-right exchange ($x_1 \leftrightarrow x_2$). That symmetry told us to use the coordinates $X$ and $x$, which decomposed the coupled system into two independent oscillators.</p>
+
+<p>In other systems, the symmetries are different but the logic is identical. A rotating system has rotational symmetry, which tells you angular momentum is conserved and that polar coordinates are the natural choice. An atom has spherical symmetry, which tells you to classify its energy states by angular momentum quantum numbers. A crystal has translational symmetry, which tells you to use Bloch waves and that the problem reduces to a single unit cell.</p>
+
+<p>Every time, the same story: find the symmetry, use it to choose the right coordinates or basis, and the complex problem breaks apart into independent pieces.</p>
+
+<!-- ======================================================
+     SECTION 6 — TRANSLATION: LOW TO HIGH PHYSICS
+     ====================================================== -->
+
+<h2>The Translation: From Hooke's Law to Normal Modes</h2>
+
+<p>Here is how the ideas in this chapter sit on top of simpler physics you already know.</p>
+
+<p>You know Hooke's law: $F = -kx$. One mass, one spring, one frequency $\omega = \sqrt{k/m}$. The spring has a stiffness $k$, the mass has inertia $m$, and the competition between them sets the clock speed of the oscillation.</p>
+
+<p>Now couple two such oscillators together. The coupling does not destroy the simple oscillator picture. It just mixes the two oscillators. What group theory tells you — through symmetry — is that there is always a way to unmix them. The unmixed versions are the normal modes. Each normal mode is its own simple oscillator with its own effective spring constant.</p>
+
+<p>In the symmetric mode, the effective spring constant is $k$ because the middle spring does not participate. In the antisymmetric mode, the effective spring constant is $3k$ because the middle spring stretches and compresses maximally, contributing $2k$ of additional stiffness.</p>
+
+<p>This translation continues up through physics. Waves are oscillators coupled across space, and their normal modes are Fourier modes. Phonons in a crystal are normal modes of coupled atomic oscillators. Quantum fields are oscillators coupled at every point in spacetime, and their normal modes are particles. The Hooke's law intuition — stiffness versus inertia — runs as an invisible thread through all of it.</p>
+
+<!-- ======================================================
+     SECTION 7 — KEYWORDS
+     ====================================================== -->
+
+<h2>Key Concepts</h2>
+
+<div class="keyword-box">
+
+  <div class="kw-item">
+    <div class="kw-title">Normal Mode</div>
+    <div>A motion of the coupled system in which every part oscillates at the same frequency with a fixed amplitude ratio. In our problem, the symmetric mode ($A_1 = A_2$, frequency $\omega_1$) and the antisymmetric mode ($A_1 = -A_2$, frequency $\omega_2$) are the two normal modes. General motion is always a superposition of normal modes. They do not mix with each other over time — once you excite a normal mode, it stays in that mode forever if there is no damping.</div>
+  </div>
+
+  <div class="kw-item">
+    <div class="kw-title">Coupled System</div>
+    <div>A system where the equation of motion for one degree of freedom contains another degree of freedom. In our case, the equation for $x_1$ contains $x_2$ and vice versa. Coupled systems are difficult to solve in their natural coordinates but simplify dramatically when you find coordinates that respect the system's symmetry.</div>
+  </div>
+
+  <div class="kw-item">
+    <div class="kw-title">Characteristic Equation</div>
+    <div>The polynomial equation obtained by setting $\det(\mathbf{M}) = 0$ in the brute force approach. Its roots give the natural frequencies of the system. For $n$ coupled oscillators, it is a polynomial of degree $n$ in $\omega^2$, which is why brute force becomes increasingly expensive as the system grows.</div>
+  </div>
+
+  <div class="kw-item">
+    <div class="kw-title">Symmetry</div>
+    <div>A transformation that leaves the physics of a system unchanged. In this problem, swapping the two masses is a symmetry because they are identical and identically connected. Symmetry is not an aesthetic observation — it is a guarantee that the system contains hidden structure which, once found, dramatically simplifies the calculation.</div>
+  </div>
+
+  <div class="kw-item">
+    <div class="kw-title">Group Theory</div>
+    <div>The mathematical language for classifying symmetries and extracting their consequences systematically. The word group refers to a precise mathematical object: a set of transformations that can be combined and inverted. In physics, group theory tells you which coordinates to use, which quantities are conserved, which transitions are allowed, and how to decompose a complicated system into independent pieces. It is the formal machinery behind the intuition that symmetry simplifies.</div>
+  </div>
+
+</div>
+
+</body>
+</html>
