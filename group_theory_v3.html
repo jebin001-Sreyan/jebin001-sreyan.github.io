@@ -273,81 +273,6 @@ MathJax = {
 
 <p>Imagine you are a detective called to a mansion after a robbery. The floor plan is perfectly symmetric — the east wing is a mirror of the west wing. A witness tells you the thief went into the east wing. Do you search both wings?</p>
 
-<p>Of course not. The symmetry cuts your work in half. You eliminated redundant territory without losing any information about the crime.</p>
-
-<p>Physics works by the same logic. Most systems in nature carry hidden symmetries. A hydrogen atom looks identical after any rotation. A crystal lattice repeats every few atoms. Two identical masses on identical springs behave the same whether you label them left-to-right or right-to-left. Recognizing these symmetries lets you throw away computation before you start. That is what group theory formalizes: a systematic way of finding what is redundant and discarding it.</p>
-
-<blockquote>Symmetry removes redundant information. Group theory is the machinery that identifies what is redundant and throws it away.</blockquote>
-
-
-<!-- ============================================================
-     FLOWCHART
-     ============================================================ -->
-
-<h2>How Physicists Actually Think About This</h2>
-
-<p>Before the worked examples, here is the reasoning pattern that symmetry makes possible:</p>
-
-<div class="flowchart">START: I have a physics problem
-   |
-   v
-Do I recognize any symmetries?
-   |
-   +-- NO  -->  Solve by brute force
-   |             (long, mechanical, gives numbers)
-   |
-   +-- YES -->  What does Noether's theorem say is conserved?
-                 |
-                 v
-              Can I use that conservation law
-              to reduce the problem?
-                 |
-                 +-- NO  -->  Solve as normal
-                 |
-                 +-- YES -->  Choose coordinates that respect
-                               the symmetry
-                                 |
-                                 v
-                               Equations decouple
-                                 |
-                                 v
-                               Solve the smaller problem
-                                 |
-                                 v
-                               END: same answer, far less work</div>
-
-<p>The detective doesn't search the whole mansion. The physicist doesn't solve the whole system. Both use structure to eliminate territory that doesn't need investigating.</p>
-
-
-<!-- ============================================================
-     TABLE 1
-     ============================================================ -->
-
-<h2>What Each Symmetry Buys You</h2>
-
-<table>
-  <tr>
-    <th>Symmetry</th>
-    <th>Conservation Law</th>
-    <th>What It Lets You Ignore</th>
-  </tr>
-  <tr>
-    <td><strong>Rotational</strong> — physics unchanged after spinning the system</td>
-    <td>Angular momentum <strong>L</strong></td>
-    <td>Two spatial dimensions — motion collapses to a plane</td>
-  </tr>
-  <tr>
-    <td><strong>Translational</strong> — physics unchanged after sliding the system</td>
-    <td>Linear momentum <strong>p</strong></td>
-    <td>Absolute position — only relative positions matter</td>
-<!-- ============================================================
-     INTRODUCTION
-     ============================================================ -->
-
-<h2>The Detective's Insight</h2>
-
-<p>Imagine you are a detective called to a mansion after a robbery. The floor plan is perfectly symmetric — the east wing is a mirror of the west wing. A witness tells you the thief went into the east wing. Do you search both wings?</p>
-
 <p>Of course not. The symmetry has already cut your work in half. You eliminated redundant territory without losing any information about the crime.</p>
 
 <p>Physics works by the same logic. Most systems in nature carry hidden symmetries. A hydrogen atom looks identical no matter which direction you rotate it. A crystal lattice repeats every few atoms. Two identical masses connected by identical springs behave the same whether you label them left-to-right or right-to-left. These symmetries let you throw away calculation work before you start. That is what group theory formalizes: a systematic way of finding what is redundant and discarding it.</p>
@@ -449,10 +374,10 @@ Do I recognize any symmetries?
 <div class="diagram-box">
 <pre>
   Fixed Wall                                         Fixed Wall
-      |                                                   |
-      |  Spring k     Mass m    Spring k    Mass m   Spring k  |
+      |                                              |
+      | Spring k  Mass m  Spring k  Mass m  Sping K  |
       |--/\/\/\--[  M1  ]--/\/\/\--[  M2  ]--/\/\/\--|
-      |                                                   |
+      |                                              |
 
                     x1 (rightward)        x2 (rightward)
 
@@ -725,6 +650,10 @@ $$x_2(t) = C_1 \cos\!\left(\omega_1 t + \phi_1\right) - C_2 \cos\!\left(\omega_2
 
   <p>The four constants $C_1, C_2, \phi_1, \phi_2$ are fixed by the initial positions and velocities of both masses. This step is the same whether you used brute force or symmetry to find $\omega_1$ and $\omega_2$. Group theory shortens the path to the frequencies. The assembly of the general solution from those frequencies is common ground.</p>
 </div>
+
+
+<!-- 
+
 <!-- ============================================================
      QUANTUM EXAMPLE — PARTICLE ON A RING
      ============================================================ -->
@@ -920,6 +849,10 @@ $$E_n = \frac{p^2}{2m} = \frac{n^2\hbar^2}{2mr^2}$$
   <div class="kw-item">
     <div class="kw-title">Normal Mode</div>
     <div>A collective pattern of motion in which every part of the system oscillates at the same frequency with a fixed amplitude ratio. In the two-mass problem there are two: the symmetric mode where both masses move together at $\omega_1$, and the antisymmetric mode where they move in opposite directions at $\omega_2$. Any general motion is a superposition of normal modes, and normal modes do not mix with each other over time.</div>
+  </div>
+  <div class="kw-item">
+    <div class="kw-title">Characteristic Equation</div>
+    <div>The polynomial equation that comes from setting the determinant of the system matrix to zero. Its roots are the natural frequencies. For $n$ coupled oscillators it is a degree-$n$ polynomial in $\omega^2$, which is why brute force becomes increasingly expensive as the system grows.</div>
   </div>
 
   <div class="kw-item">
