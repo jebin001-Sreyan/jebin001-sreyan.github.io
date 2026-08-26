@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Newton to Lattice Boltzmann — Kinetic Theory Chapter</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<style>
+  :root{
+    --paper: #f6f1e6;
+    --paper-deep: #efe7d5;
+    --ink: #26291f;
+    --ink-soft: #52564a;
+    --pine: #34513f;
+    --pine-deep: #223528;
+    --amber: #b8862f;
+    --amber-soft: #eadfc4;
+    --rule: #cabf9e;
+    --chalk: #fbf8f1;
+    --w-display: 'Fraunces', serif;
+    --w-body: 'Source Serif 4', serif;
+    --w-mono: 'IBM Plex Mono', monospace;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--w-body);
+    font-size: 18px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .chapter{ max-width: 760px; margin: 0 auto; padding: 5rem 1.5rem 8rem; }
+
+  .kicker{
+    font-family: var(--w-mono); font-size: 0.72rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--pine);
+    display:flex; align-items:center; gap: 0.6rem; margin-bottom: 1.1rem;
+  }
+  .kicker::before{ content:""; width: 2.1rem; height: 1px; background: var(--pine); display:inline-block; }
+
+  h1.title{
+    font-family: var(--w-display); font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3rem); line-height: 1.08;
+    margin: 0 0 0.9rem; color: var(--pine-deep); letter-spacing: -0.01em;
+  }
+  .dek{ font-size: 1.15rem; color: var(--ink-soft); max-width: 58ch; margin: 0 0 1.6rem; }
+
+  .toc{
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1.3rem 1.5rem;
+    margin: 0 0 2.8rem;
+    font-family: var(--w-mono);
+    font-size: 0.85rem;
+  }
+  .toc-label{ text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.68rem; color: var(--pine); display:block; margin-bottom: 0.7rem; }
+  .toc ol{ margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 1.6rem; }
+  .toc li{ margin-bottom: 0.45rem; break-inside: avoid; }
+  .toc a{ color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--rule); }
+  .toc a:hover{ color: var(--amber); border-color: var(--amber); }
+
+  .route{
+    background: var(--pine-deep); color: var(--chalk); border-radius: 3px;
+    padding: 1.6rem 1.7rem; margin: 0 0 3.2rem;
+    font-family: var(--w-mono); font-size: 0.82rem; line-height: 1.9;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 24px -18px rgba(34,53,40,0.6);
+  }
+  .route .route-label{ text-transform: uppercase; letter-spacing: 0.14em; color: #a9c4ac; font-size: 0.68rem; margin-bottom: 0.9rem; display:block; }
+  .route-line{ display:flex; align-items:center; flex-wrap:wrap; gap: 0.45rem 0.35rem; }
+  .route-node{ padding: 0.18rem 0.55rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 2px; white-space: nowrap; }
+  .route-arrow{ color: #7fa389; }
+  .route-branch{ margin-top: 0.55rem; padding-left: 1.6rem; border-left: 1px dashed rgba(255,255,255,0.22); }
+  .route-branch div{ margin: 0.3rem 0; }
+  .route-tag{ color: #e8c468; font-size: 0.72rem; }
+
+  .part{ margin-top: 3.4rem; padding-top: 3.4rem; border-top: 1px solid var(--rule); scroll-margin-top: 1.5rem; }
+  .part:first-of-type{ border-top: none; margin-top: 2.6rem; padding-top: 0; }
+  .part-eyebrow{ font-family: var(--w-mono); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.5rem; }
+
+  h2{ font-family: var(--w-display); font-weight: 600; font-size: 1.65rem; color: var(--pine-deep); margin: 0 0 1.1rem; letter-spacing: -0.005em; }
+  h3{ font-family: var(--w-display); font-weight: 500; font-size: 1.15rem; color: var(--pine-deep); margin: 1.8rem 0 0.7rem; }
+  p{ margin: 0 0 1.15rem; }
+
+  .term{ font-weight: 600; color: var(--pine-deep); }
+  .def{ color: var(--ink-soft); font-style: italic; font-size: 0.97em; }
+  .def::before{ content: "["; font-style: normal; color: var(--amber); }
+  .def::after{ content: "]"; font-style: normal; color: var(--amber); }
+
+  .eq{ background: var(--paper-deep); border-left: 3px solid var(--pine); padding: 1.1rem 1.4rem; margin: 1.3rem 0; border-radius: 0 3px 3px 0; overflow-x: auto; }
+  .eq-label{ font-family: var(--w-mono); font-size: 0.72rem; color: var(--pine); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+  .glossary{ margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed var(--rule); font-size: 0.92rem; }
+  .glossary div{ margin: 0.3rem 0; }
+  .glossary .sym{ font-family: var(--w-mono); color: var(--pine-deep); margin-right: 0.5rem; }
+
+  blockquote{ margin: 1.6rem 0; padding: 0.2rem 0 0.2rem 1.3rem; border-left: 2px solid var(--amber); color: var(--ink-soft); font-style: italic; }
+
+  .figure{ margin: 2rem 0; }
+  .figure img{ width: 100%; border-radius: 4px; border: 1px solid var(--rule); display:block; background: var(--pine-deep); }
+  .figure .fig-tag{ font-family: var(--w-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); margin-bottom: 0.5rem; display:block; }
+  .caption{ font-family: var(--w-mono); font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.6rem; line-height: 1.55; }
+  .fig-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin: 2rem 0; }
+  @media (max-width: 640px){ .fig-grid{ grid-template-columns: 1fr; } }
+
+  .note{ background: var(--amber-soft); border: 1px solid #d9c68f; border-radius: 3px; padding: 1rem 1.3rem; margin: 1.4rem 0; font-size: 0.95rem; }
+  .note .note-label{ font-family: var(--w-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber); display:block; margin-bottom: 0.4rem; }
+
+  table.levels{ width:100%; border-collapse: collapse; margin: 1.4rem 0; font-size: 0.95rem; }
+  table.levels th, table.levels td{ text-align:left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule); }
+  table.levels th{ font-family: var(--w-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--pine); }
+
+  .chain{ font-family: var(--w-mono); font-size: 0.9rem; text-align:center; color: var(--pine-deep); margin: 1.4rem 0; }
+
+  hr.rule{ border:none; border-top: 1px solid var(--rule); margin: 3rem 0; }
+
+  .endnote{ margin-top: 3.4rem; padding-top: 2rem; border-top: 1px solid var(--rule); font-size: 0.95rem; color: var(--ink-soft); }
+
+  .back-to-top{ display:inline-block; margin-top: 3rem; font-family: var(--w-mono); font-size: 0.78rem; color: var(--pine); text-decoration:none; border-bottom: 1px dotted var(--rule); }
+
+  @media (max-width: 600px){
+    .chapter{ padding: 3rem 1.1rem 5rem; }
+    .eq{ padding: 0.9rem 1rem; }
+    .toc ol{ columns: 1; }
+  }
+</style>
+</head>
+<body>
+
+<article class="chapter" id="top">
+
+  <div class="kicker">Kinetic Theory &amp; Computational Fluid Dynamics — Chapter Notes</div>
+  <h1 class="title">From Newton to Lattice Boltzmann</h1>
+  <p class="dek">How ten-to-the-twenty-third individual particles collapse into a handful of fluid equations — and how that same collapse, run in reverse, becomes an algorithm. All diagrams and plots below are separate image files, referenced inline.</p>
+
+  <div class="toc">
+    <span class="toc-label">In this chapter</span>
+    <ol>
+      <li><a href="#top">Newton's law, written two ways — the destination up front</a></li>
+      <li><a href="#part1">Newton — in principle, everything is known</a></li>
+      <li><a href="#part2">Liouville — particles to probability</a></li>
+      <li><a href="#part3">BBGKY — reducing the information</a></li>
+      <li><a href="#part4">Molecular chaos — the decisive approximation</a></li>
+      <li><a href="#part5">The Boltzmann equation</a></li>
+      <li><a href="#part6">Moments — how f becomes a fluid</a></li>
+      <li><a href="#part7">Equilibrium</a></li>
+      <li><a href="#part8">BGK — relaxation instead of collisions</a></li>
+      <li><a href="#part9">Chapman–Enskog — recovering Navier–Stokes</a></li>
+      <li><a href="#part10">Lattice Boltzmann — from theory to algorithm</a></li>
+      <li><a href="#part11">Boundaries</a></li>
+      <li><a href="#part12">Two roads, one destination</a></li>
+      <li><a href="#part13">The architecture in ten seconds</a></li>
+    </ol>
+  </div>
+
+  <div class="route">
+    <span class="route-label">The whole story in one picture</span>
+    <div class="route-line">
+      <span class="route-node">Newton</span><span class="route-arrow">→</span>
+      <span class="route-node">Liouville</span><span class="route-arrow">→</span>
+      <span class="route-node">BBGKY</span><span class="route-arrow">→</span>
+      <span class="route-node" style="color:#e8c468;border-color:#e8c468;">molecular chaos</span><span class="route-arrow">→</span>
+      <span class="route-node">Boltzmann</span>
+    </div>
+    <div class="route-branch">
+      <div><span class="route-tag">A</span> &nbsp;→ moments + Chapman–Enskog → <strong>Navier–Stokes</strong> &nbsp;<span style="color:#a9c4ac;">(why fluid mechanics works)</span></div>
+      <div><span class="route-tag">B</span> &nbsp;→ BGK + discretization → <strong>Lattice Boltzmann</strong> &nbsp;<span style="color:#a9c4ac;">(how to simulate it)</span></div>
+    </div>
+  </div>
+
+  <p>There are really three descriptions of the same fluid, and the entire chapter is about moving between them:</p>
+
+  <table class="levels">
+    <tr><th>Level</th><th>What it describes</th><th>Variables</th></tr>
+    <tr><td>Microscopic</td><td>Individual particles</td><td>xᵢ, vᵢ</td></tr>
+    <tr><td>Mesoscopic / kinetic</td><td>Distribution of particles</td><td>f(x, v, t)</td></tr>
+    <tr><td>Macroscopic</td><td>Fluid fields</td><td>ρ, u, P</td></tr>
+  </table>
+
+  <p>The word <span class="term">mesoscopic</span><span class="def">the middle layer, neither individual particles nor a smooth continuum — a statistical distribution that stands in for both</span> matters more than it looks. Lattice Boltzmann lives in that middle layer. It never tracks molecules directly, and it never solves Navier–Stokes directly either.</p>
+
+  <div class="part" style="margin-top:2.2rem; padding-top:2.2rem;">
+    <div class="part-eyebrow">Before the journey — the destination, stated up front</div>
+    <h2>Newton's law, written two ways</h2>
+    <p>The microscopic starting point:</p>
+    <div class="eq">
+      <div class="eq-label">Microscopic form</div>
+      $$\ddot{x}=\frac{F(N)}{m}$$
+      <p style="margin:0.6rem 0 0;">Acceleration equals force over mass — ordinary Newton's second law, except F(N) signals that the force on any one particle depends on every other particle in the system.</p>
+    </div>
+    <p>And the macroscopic form — where this whole chapter is headed:</p>
+    <div class="eq">
+      <div class="eq-label">Macroscopic form — Navier–Stokes momentum equation</div>
+      $$\partial_t(\rho \mathbf u)+\nabla\cdot(\rho \mathbf u \mathbf u)=-\nabla P+\nabla\cdot\boldsymbol{\sigma}$$
+      <div class="glossary">
+        <div><span class="sym">ρ</span><span class="term">density</span><span class="def">fluid mass per unit volume</span></div>
+        <div><span class="sym">u</span><span class="term">velocity field</span><span class="def">the fluid's local velocity, defined everywhere in space</span></div>
+        <div><span class="sym">ρu</span><span class="term">momentum density</span><span class="def">the actual conserved quantity this whole equation tracks</span></div>
+        <div><span class="sym">∂ₜ(ρu)</span><span class="term">local time derivative</span><span class="def">how momentum density changes with time at one fixed point in space</span></div>
+        <div><span class="sym">∇·(ρuu)</span><span class="term">momentum flux divergence</span><span class="def">momentum being physically carried around by the flow itself — the nonlinear "advection" term that makes fluid dynamics genuinely hard</span></div>
+        <div><span class="sym">−∇P</span><span class="term">pressure gradient force</span><span class="def">fluid is pushed from high pressure toward low pressure</span></div>
+        <div><span class="sym">∇·σ</span><span class="term">viscous stress divergence</span><span class="def">friction between fluid layers moving at different speeds — this is what makes a fluid "sticky"</span></div>
+      </div>
+    </div>
+    <p>The entire chapter is the bridge connecting these two equations. One describes a single particle; the other describes a continuum field. That bridge has several rungs — Liouville, BBGKY, molecular chaos, Boltzmann, BGK, Chapman–Enskog — each one below.</p>
+  </div>
+
+  <div class="figure">
+    <span class="fig-tag">Source — board 1</span>
+    <img src="images/board1.jpg" alt="Chalkboard with the Newton to Navier-Stokes derivation chain: Liouville equation, BBGKY hierarchy, Chapman-Enskog expansion, and moment definitions">
+    <div class="caption">The full physics derivation as worked on the board — Liouville → BBGKY → Boltzmann → Chapman–Enskog → Navier–Stokes.</div>
+  </div>
+
+  <!-- PART I -->
+  <div class="part" id="part1">
+    <div class="part-eyebrow">Part I — Microscopic mechanics</div>
+    <h2>Newton: in principle, everything is known</h2>
+    <p>For any particle i, ordinary Newtonian mechanics gives:</p>
+    <div class="eq">
+      <div class="eq-label">Equations of motion</div>
+      $$m\dot{\mathbf v}_i=\mathbf F_i,\qquad \dot{\mathbf x}_i=\mathbf v_i.$$
+      <div class="glossary">
+        <div><span class="sym">m</span>particle mass</div>
+        <div><span class="sym">v̇ᵢ</span>acceleration of particle i</div>
+        <div><span class="sym">Fᵢ</span>net force on particle i from every other particle</div>
+      </div>
+    </div>
+    <p>With N particles, the complete microscopic state is the full list of every position and velocity:</p>
+    <div class="eq">$$\Gamma=(\mathbf x_1,\mathbf v_1,\ldots,\mathbf x_N,\mathbf v_N),\qquad N\sim10^{23}.$$</div>
+    <p>Newton's equations aren't inadequate — there are simply far too many of them to track. And, importantly, nobody actually wants to know where molecule number 8.2×10¹⁹ went. What's wanted is <span class="term">density</span> and <span class="term">velocity</span> — bulk, statistical quantities. So statistical mechanics changes the question from <em>"where is every particle?"</em> to <em>"how are particles statistically distributed?"</em> That reframing is the seed of everything that follows.</p>
+  </div>
+
+  <!-- PART II -->
+  <div class="part" id="part2">
+    <div class="part-eyebrow">Part II — From particles to probability</div>
+    <h2>Liouville: replace trajectories with a distribution</h2>
+    <p>Introduce the <span class="term">N-particle phase-space density</span><span class="def">a single function that assigns a probability to every possible simultaneous arrangement of all N particles' positions and velocities</span>, f<sup>(N)</sup>(x₁,v₁,…,xₙ,vₙ,t). For the forces Fᵢ, its evolution is given by the <span class="term">Liouville equation</span><span class="def">an exact conservation law stating that probability in phase space is neither created nor destroyed — it only flows</span>:</p>
+    <div class="eq">
+      <div class="eq-label">Liouville equation</div>
+      $$\frac{\partial f^{(N)}}{\partial t}+\sum_i \mathbf v_i\cdot\nabla_{\mathbf x_i}f^{(N)}+\sum_i \frac{\mathbf F_i}{m}\cdot\nabla_{\mathbf v_i}f^{(N)}=0$$
+    </div>
+    <p>Nothing mysterious has happened here. Newton followed individual trajectories through phase space; Liouville follows the probability density of possible trajectories through that same space. It is, at heart, just a conservation equation — <span class="term">probability flows through phase space</span><span class="def">exactly the way mass or charge flows through ordinary space: it can move around but the total is fixed</span> — nothing invented, nothing approximated.</p>
+    <div class="note">
+      <span class="note-label">The problem</span>
+      Phase space has 6N dimensions for N three-dimensional particles. Liouville is exact — and computationally monstrous. Nobody solves this equation directly for a real gas.
+    </div>
+  </div>
+
+  <!-- PART III -->
+  <div class="part" id="part3">
+    <div class="part-eyebrow">Part III — Reduce the information</div>
+    <h2>BBGKY: perhaps we don't need everybody</h2>
+    <p>Define <span class="term">reduced distributions</span><span class="def">functions that describe only one or a few particles at a time, having averaged away everyone else</span>. The one-particle distribution f<sup>(1)</sup>(x₁,v₁,t) asks what a single representative particle statistically does. The two-particle distribution f<sup>(2)</sup>(x₁,v₁,x₂,v₂,t) contains correlations between pairs. And so on for f<sup>(3)</sup>, f<sup>(4)</sup>, …</p>
+    <p>Integrating the unwanted particles out of the Liouville equation produces something annoying: the equation for f<sup>(1)</sup> requires knowing f<sup>(2)</sup>; the equation for f<sup>(2)</sup> requires f<sup>(3)</sup>; and so on, up to f<sup>(N)</sup>. That's the <span class="term">BBGKY hierarchy</span><span class="def">Bogoliubov–Born–Green–Kirkwood–Yvon — five people who independently derived the same infinite chain of coupled equations around 1946</span>.</p>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 1</span>
+      <img src="diagrams/bbgky-hierarchy.png" alt="Diagram showing the BBGKY hierarchy chain: f(1) depends on f(2), which depends on f(3), and so on up to f(N)">
+      <div class="caption">Each reduced distribution's evolution equation depends on the next one up — an infinite, unclosed chain until it's cut off by an approximation.</div>
+    </div>
+
+    <p>Why does this happen? Because particles collide — you cannot predict particle 1 statistically without knowing something about the particle it's about to hit. BBGKY has reduced the dimensionality of each individual description, but the problem is still not <span class="term">closed</span><span class="def">a system of equations is "closed" once it contains no reference to any unknown higher-order quantity — right now it always does</span>.</p>
+  </div>
+
+  <!-- PART IV -->
+  <div class="part" id="part4">
+    <div class="part-eyebrow">Part IV — The decisive approximation</div>
+    <h2>Molecular chaos</h2>
+    <p>For a dilute gas, Boltzmann's assumption is that particles arriving at a collision are statistically uncorrelated <em>immediately before</em> they meet:</p>
+    <div class="eq">
+      <div class="eq-label">Stosszahlansatz (molecular chaos)</div>
+      $$f^{(2)}_{\text{pre-collision}}\approx f^{(1)}f^{(1)}$$
+    </div>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 2</span>
+      <img src="diagrams/molecular-chaos.png" alt="Diagram showing two independent particles entering a collision, becoming correlated after colliding">
+      <div class="caption">Molecular chaos assumes each new collision again sees statistically independent incoming particles, even though the previous collision left its participants correlated.</div>
+    </div>
+
+    <p>This is worth sitting with, because the intuitive story is subtly wrong. It is <em>not</em> that correlations disappear because collisions are frequent — in fact, collisions <em>create</em> correlations. The <span class="term">molecular chaos</span><span class="def">the assumption that colliding particles' incoming velocities are independent, even though their outgoing velocities are not — justified for dilute gases in the kinetic limit</span> hypothesis simply neglects the correlations that already exist going into the next collision. When the next collision is described, the incoming pair is once again approximated as uncorrelated. That single move is what closes the infinite hierarchy into one equation.</p>
+  </div>
+
+  <!-- PART V -->
+  <div class="part" id="part5">
+    <div class="part-eyebrow">Part V — The Boltzmann equation</div>
+    <h2>One distribution instead of 10²³ trajectories</h2>
+    <p>Define the one-particle distribution f(x,v,t) — this is f<sup>(1)</sup> from Part III, with the superscript dropped now that it's the only distribution left in play; f<sup>(2)</sup>, f<sup>(3)</sup>, and the rest of the hierarchy have already done their job and exited the derivation via molecular chaos. The <span class="term">Boltzmann equation</span><span class="def">the single closed equation, in six-dimensional position-velocity space, that replaces the entire N-particle problem</span> reads:</p>
+    <div class="eq">
+      <div class="eq-label">Boltzmann equation</div>
+      $$\frac{\partial f}{\partial t}+\mathbf v\cdot\nabla_{\mathbf x}f+\frac{\mathbf F}{m}\cdot\nabla_{\mathbf v}f=\Omega(f)$$
+      <div class="glossary">
+        <div><span class="sym">Ω(f)</span>the <span class="term">collision operator</span><span class="def">the term encoding how collisions redistribute particles among velocities</span></div>
+      </div>
+    </div>
+    <p>Without external body forces, this simplifies to:</p>
+    <div class="eq">$$\partial_t f+\mathbf v\cdot\nabla f=\Omega(f)$$</div>
+    <p>This decomposes into two pieces that matter enormously for everything downstream:</p>
+    <div class="chain">
+      <span class="term">streaming</span><span class="def" style="margin-left:0.3rem;">particles moving in straight lines between collisions</span> &nbsp;=&nbsp;
+      <span class="term">collisions</span><span class="def" style="margin-left:0.3rem;">local redistribution among velocities</span>
+    </div>
+    <p>Particles, at bottom, just <strong>move → collide → move → collide →</strong> … Lattice Boltzmann turns exactly that structure into an algorithm.</p>
+  </div>
+
+  <!-- PART VI -->
+  <div class="part" id="part6">
+    <div class="part-eyebrow">Part VI — How does f become a fluid?</div>
+    <h2>Moments</h2>
+    <p>f is not yet density or velocity — it's a distribution over velocities at every point in space. Macroscopic quantities are recovered by taking <span class="term">moments</span><span class="def">weighted integrals of f over all possible velocities — each power of v extracts a different physical quantity</span> over velocity space.</p>
+    <div class="eq">
+      <div class="eq-label">Zeroth moment — density</div>
+      $$\rho=\int f\,d\mathbf v$$
+    </div>
+    <div class="eq">
+      <div class="eq-label">First moment — momentum</div>
+      $$\rho\mathbf u=\int \mathbf v f\,d\mathbf v \quad\Rightarrow\quad \mathbf u=\frac{1}{\rho}\int \mathbf v f\,d\mathbf v$$
+    </div>
+    <div class="eq">
+      <div class="eq-label">Second moment — stress information</div>
+      $$\int \mathbf v\mathbf v\,f\,d\mathbf v \quad\text{— contains pressure and viscous stress}$$
+    </div>
+    <p>This is one of the deepest ideas in the whole subject: you don't need to know every detail of f to describe ordinary fluid motion. You mostly need its first few moments.</p>
+  </div>
+
+  <!-- PART VII -->
+  <div class="part" id="part7">
+    <div class="part-eyebrow">Part VII — Why collisions matter</div>
+    <h2>Equilibrium</h2>
+    <p>Left alone, without macroscopic gradients driving it away, repeated collisions push the velocity distribution toward local <span class="term">thermodynamic equilibrium</span><span class="def">the state where no further net change occurs from collisions alone — classically, a Maxwellian bell curve in velocity</span>:</p>
+    <div class="eq">
+      $$f^{eq}\sim\exp\left[-\frac{|\mathbf v-\mathbf u|^2}{2c_s^2}\right]$$
+      <div class="glossary"><div><span class="sym">cₛ</span>the speed of sound in the fluid — sets the width of the equilibrium velocity spread</div></div>
+    </div>
+    <p>The conceptual point, before any normalization detail: <strong>collisions drive f toward f<sup>eq</sup></strong>. Unfortunately, real Boltzmann collision integrals are analytically unpleasant. Enter BGK.</p>
+  </div>
+
+  <!-- PART VIII -->
+  <div class="part" id="part8">
+    <div class="part-eyebrow">Part VIII — BGK</div>
+    <h2>Replace complicated collisions by relaxation</h2>
+    <p>The <span class="term">BGK approximation</span><span class="def">Bhatnagar–Gross–Krook, 1954 — replaces the true collision integral with a single exponential relaxation toward equilibrium</span> writes:</p>
+    <div class="eq">
+      <div class="eq-label">BGK collision operator</div>
+      $$\Omega(f)=-\frac{1}{\tau}(f-f^{eq})\qquad\Rightarrow\qquad \partial_t f+\mathbf v\cdot\nabla f=-\frac{1}{\tau}(f-f^{eq})$$
+      <div class="glossary"><div><span class="sym">τ</span>the <span class="term">relaxation time</span><span class="def">how quickly f is pulled back toward equilibrium after a disturbance</span></div></div>
+    </div>
+    <p>If f is far from equilibrium, the correction is large; if f already equals f<sup>eq</sup>, the collision term vanishes.</p>
+    <div class="note">
+      <span class="note-label">A stability condition falls straight out of this</span>
+      Push τ/Δt below ½ and the discrete relaxation stops decaying — the oscillation from the plot below starts growing instead of shrinking, and the simulation diverges. τ/Δt ≥ ½ is therefore a hard floor, not just a rule of thumb — and it's exactly why the viscosity formula in Part X (ν = c<sub>s</sub>²(τ−½)) can never go negative in a stable simulation.
+    </div>
+
+    <div class="figure">
+      <span class="fig-tag">Plot 1</span>
+      <img src="diagrams/relaxation-decay.png" alt="Semi-log plot of the deviation |f minus f equilibrium| decaying exponentially over time for two different relaxation times tau">
+      <div class="caption">Three genuinely different behaviors depending on τ/Δt: <strong>under-relaxation</strong> (τ/Δt&gt;1, gold) decays smoothly like the continuous BGK equation; <strong>full relaxation</strong> (τ/Δt=1, blue) jumps straight to equilibrium in one step; <strong>over-relaxation</strong> (½&lt;τ/Δt&lt;1, coral) oscillates around equilibrium with shrinking amplitude. Push τ/Δt below ½ and the oscillation amplitude grows instead of shrinking — the scheme goes unstable.</div>
+    </div>
+
+    <div class="note">
+      <span class="note-label">A correction worth keeping straight</span>
+      The full thermal BGK model can be built to conserve mass, momentum, <em>and</em> energy. But the standard isothermal Lattice Boltzmann method most people learn first is built primarily around conserving mass and momentum — temperature is not generally an independent hydrodynamic field there. Worth remembering before reaching thermal LBM later.
+    </div>
+  </div>
+
+  <!-- PART IX -->
+  <div class="part" id="part9">
+    <div class="part-eyebrow">Part IX — Kinetic theory becomes fluid mechanics</div>
+    <h2>Chapman–Enskog</h2>
+    <p>Why does ordinary fluid mechanics work at all, if what's really happening underneath is particles and collisions? Because when the molecular scale is much smaller than the macroscopic scale — the <span class="term">Knudsen number</span><span class="def">the ratio of the mean free path between collisions to the size of the system being studied</span> is small —</p>
+    <div class="eq">$$Kn=\frac{\lambda_{\rm mfp}}{L}\ll1$$</div>
+    <p>— the distribution stays close to local equilibrium, and can be expanded as a small perturbation around it:</p>
+    <div class="eq">
+      <div class="eq-label">Chapman–Enskog expansion</div>
+      $$f=f^{(0)}+\epsilon f^{(1)}+\epsilon^2 f^{(2)}+\cdots,\qquad \epsilon\sim Kn,\qquad f^{(0)}=f^{eq}$$
+    </div>
+    <p>The equilibrium part f<sup>(0)</sup> gives ideal-fluid behavior. The small departure f<sup>(1)</sup> contains transport — in particular, viscosity.</p>
+
+    <div class="figure">
+      <span class="fig-tag">Plot 2</span>
+      <img src="diagrams/tau-family-curves.png" alt="Family of curves showing a nonequilibrium moment rising then decaying, plotted for four different relaxation times tau">
+      <div class="caption">The nonequilibrium correction f⁽¹⁾ for different τ — larger τ produces a slower, broader transient before the flow settles back toward equilibrium. This is the transport-carrying part of the expansion.</div>
+    </div>
+
+    <p>Taking moments of the expansion at the right orders yields the continuum equations directly:</p>
+    <div class="eq">
+      <div class="eq-label">Continuity (mass conservation)</div>
+      $$\partial_t\rho+\nabla\cdot(\rho\mathbf u)=0$$
+    </div>
+    <div class="eq">
+      <div class="eq-label">Momentum (Navier–Stokes)</div>
+      $$\partial_t(\rho\mathbf u)+\nabla\cdot(\rho\mathbf u\mathbf u)=-\nabla p+\nabla\cdot\boldsymbol{\sigma}+\rho\mathbf g$$
+    </div>
+    <div class="chain">Boltzmann —[ Kn ≪ 1, Chapman–Enskog + moments ]→ Navier–Stokes</div>
+    <p>That arrow is the central theoretical bridge of the whole chapter.</p>
+
+    <h3>Deducing the continuity equation, explicitly</h3>
+    <p>It's worth actually watching this fall out, rather than taking it on faith. Take the <span class="term">zeroth moment</span><span class="def">multiply the kinetic equation by 1 and integrate over all velocities — extracts the mass-conservation content</span> of the BGK equation — integrate every term over v:</p>
+    <div class="eq">
+      <div class="eq-label">Step 1 — integrate the BGK equation over velocity</div>
+      $$\int\Big(\partial_t f + \mathbf v\cdot\nabla f\Big)\,d\mathbf v \;=\; \int \Omega(f)\,d\mathbf v$$
+    </div>
+    <p>On the left, swap the order of integration and differentiation, and use the moment definitions already established:</p>
+    <div class="eq">
+      <div class="eq-label">Step 2 — substitute ρ = ∫f dv and ρu = ∫vf dv</div>
+      $$\partial_t\underbrace{\int f\,d\mathbf v}_{\rho} \;+\; \nabla\cdot\underbrace{\int \mathbf v f\,d\mathbf v}_{\rho\mathbf u} \;=\; \int\Omega(f)\,d\mathbf v$$
+    </div>
+    <p>The right-hand side is the interesting part. Whatever a physically sensible collision operator does, it cannot create or destroy particles — collisions only redistribute existing particles among velocities. That's a <span class="term">collision invariant</span><span class="def">a quantity left unchanged by any collision — mass, momentum, and kinetic energy are the three classical ones</span>, and it means:</p>
+    <div class="eq">
+      <div class="eq-label">Step 3 — mass is a collision invariant</div>
+      $$\int\Omega(f)\,d\mathbf v = \int -\frac{1}{\tau}(f - f^{eq})\,d\mathbf v = 0$$
+      <p style="margin:0.6rem 0 0;">This vanishes because f<sup>eq</sup> is constructed, by definition, to have exactly the same density as f — so their zeroth moments cancel identically. No approximation is used here at all.</p>
+    </div>
+    <p>What's left is the continuity equation, exactly:</p>
+    <div class="eq">
+      <div class="eq-label">Result — continuity equation</div>
+      $$\partial_t\rho + \nabla\cdot(\rho\mathbf u) = 0$$
+    </div>
+    <div class="note">
+      <span class="note-label">Why this one is special</span>
+      Notice the Chapman–Enskog expansion (ε, f⁽⁰⁾, f⁽¹⁾, …) never actually entered this derivation. Continuity comes for free, at every order, straight from mass conservation of the collision operator. The <em>momentum</em> equation is the one that genuinely needs the expansion — taking the first moment instead of the zeroth leaves a stress-tensor term that only resolves into recognizable viscous form once f⁽¹⁾, the nonequilibrium correction, is substituted in. Continuity is a bookkeeping identity; Navier–Stokes' viscous term is the actual physics content of the expansion.
+    </div>
+  </div>
+
+  <!-- PART X -->
+  <div class="part" id="part10">
+    <div class="part-eyebrow">Part X — Now, finally, Lattice Boltzmann</div>
+    <h2>Where Lattice Boltzmann actually came from</h2>
+    <p>Before the discretization story, it's worth knowing that LBM didn't arise purely by discretizing the continuous BGK equation — historically, it grew out of a completely different-looking model, and the connection to a much older idea in statistical mechanics is worth making explicit.</p>
+
+    <p>Recall the canonical ensemble result from ordinary stat mech: for a system with Hamiltonian H at temperature T, the probability of a configuration goes as the <span class="term">Boltzmann weight</span><span class="def">the exponential factor e^(−H/kT) that assigns higher probability to lower-energy configurations — the foundation of equilibrium statistical mechanics</span>:</p>
+    <div class="eq">
+      <div class="eq-label">Canonical ensemble (e.g. the Ising model)</div>
+      $$H=-\sum_{i,j}S_iS_j-h\sum_i S_i \qquad\qquad P\sim e^{-H/kT}$$
+      <div class="glossary"><div><span class="sym">Sᵢ</span>a discrete spin variable at lattice site i (Ising model) — the conceptual precursor to the Boolean occupation number nᵢ introduced just below; note h here is the external field, unrelated to the lattice-gas variable that follows</div></div>
+    </div>
+    <p>The point of bringing this up: a lattice of discrete, Boolean-like microscopic variables (spins up/down; particle present/absent) is a completely standard object in statistical mechanics, and its macroscopic behavior emerges the same way in every such model — by <span class="term">ensemble averaging</span><span class="def">averaging a noisy microscopic variable over many realizations, or over a probability distribution, to get a smooth macroscopic field</span> over the microscopic noise.</p>
+
+    <h3>Lattice gas automata — the direct ancestor</h3>
+    <p>The actual predecessor to LBM is the <span class="term">lattice gas automaton</span><span class="def">a cellular-automaton model where particles hop between lattice sites and undergo discrete, momentum-conserving collisions — everything is either 0 or 1, present or absent</span>, and it has its own two-step history. The first version, the <span class="term">HPP model</span><span class="def">Hardy, Pomeau, and de Pazzis, 1973 — the original lattice gas automaton</span>, ran on a square lattice with four velocities per node — simple, but its square symmetry turned out to be too crude: it doesn't produce isotropic (direction-independent) macroscopic behavior, so it can't actually simulate a real fluid correctly. It took until 1986 for Frisch, Hasslacher, and Pomeau to fix this with the <span class="term">FHP model</span><span class="def">a lattice gas automaton on a triangular lattice with six velocities per node — the extra directions give it the isotropy HPP lacked, and it's the model that first genuinely worked as a fluid solver</span>, replacing the square lattice with a triangular one — six directions per node instead of four, giving each site hexagonal-looking connectivity — which is why the board's third grid sketch, drawn with diagonal cross-hatching rather than a plain square grid, likely depicts this FHP geometry specifically rather than D2Q9.</p>
+    <p>Define a Boolean occupation number n<sub>i</sub>(x,t) ∈ {0,1}: does a particle moving with velocity v<sub>i</sub> occupy site x at time t? Its update rule is:</p>
+    <div class="eq">
+      <div class="eq-label">Lattice gas automaton update rule</div>
+      $$n_i(\mathbf x+\mathbf v_i,t+1)=n_i(\mathbf x,t)+\Xi_i(\{n_j\}(\mathbf x,t))$$
+      <div class="glossary"><div><span class="sym">Ξᵢ</span>the automaton's local collision rule — a deterministic or probabilistic rearrangement of occupied directions at a site, built to conserve particle number and momentum exactly</div></div>
+    </div>
+    <p>This works — it genuinely produces fluid-like behavior in simulation — but it's noisy. Because n<sub>i</sub> is strictly 0 or 1, any single run is full of statistical fluctuation, and extracting smooth macroscopic fields requires averaging over many independent runs or large spatial patches.</p>
+
+    <div class="note">
+      <span class="note-label">The late-1980s move</span>
+      McNamara and Zanetti's insight (1988), followed quickly by Higuera and Jiménez (1989): instead of running the noisy Boolean automaton many times and averaging afterward, track the <span class="term">ensemble-averaged occupation</span> directly as a single real-valued field from the start:
+      $$f_i(\mathbf x,t)=\langle n_i(\mathbf x,t)\rangle$$
+      That's it — that single substitution is the birth of Lattice Boltzmann. The noise is gone by construction, because f is real-valued from the outset rather than recovered by averaging afterward. What's worth knowing: this ensemble-averaging route is how LBM was actually discovered, and it long predates the clean continuous-kinetic-theory story told in Parts I–IX of this chapter. Nobody showed that LBM is rigorously equivalent to a discretized Boltzmann-BGK equation until He and Luo did it in 1997 — nearly a decade later. This chapter presents the "modern," continuous-theory-first version because it's the clearer teaching order, but historically the field ran the other way: the algorithm came first, and its justification from kinetic theory came second.
+    </div>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 3</span>
+      <img src="diagrams/lga-to-lbm.png" alt="Diagram showing a Boolean lattice gas grid with particles present or absent as dots, an arrow labeled ensemble average, and the resulting smooth continuous field of the lattice Boltzmann distribution">
+      <div class="caption">Left: a single lattice gas realization — noisy, Boolean, 0-or-1 at every site (nᵢ). Right: the ensemble-averaged field fᵢ(x,t) — smooth, real-valued, and directly simulatable without ever running the noisy automaton at all.</div>
+    </div>
+
+    <p>With f established as a real-valued field, its own update rule follows the same shape as the automaton it replaced, but now with a general collision function Ω<sub>i</sub> acting on real numbers instead of bits:</p>
+    <div class="eq">
+      <div class="eq-label">General discrete lattice Boltzmann equation</div>
+      $$f_i(\mathbf x+\mathbf v_i,t+1)=f_i(\mathbf x,t)+\Omega_i(\{f_j\},\tau)$$
+    </div>
+    <p>Specializing Ω<sub>i</sub> to the BGK form gives back the equation this chapter has already been building toward:</p>
+    <div class="eq">
+      <div class="eq-label">BGK-specialized</div>
+      $$\Omega_i=-\frac{1}{\tau}(f_i-f_i^{0})$$
+    </div>
+
+    <h3>Chapman–Enskog, done properly, on the discrete lattice equation</h3>
+    <p>Taylor-expand the streaming step itself around (x,t):</p>
+    <div class="eq">
+      <div class="eq-label">Taylor expansion of the streaming step</div>
+      $$f_i(\mathbf x+\mathbf v_i,t+1)=f_i+(\partial_t+\mathbf v_i\cdot\nabla)f_i+\tfrac12(\partial_t+\mathbf v_i\cdot\nabla)^2f_i+O(\partial^3)$$
+    </div>
+    <p>That expansion alone is just a setup. Carried through to completion, it's the actual proof that LBM's zeroth-order hydrodynamic limit is the continuity equation — not just a plausibility argument. Start from the same moment definitions used for molecular chaos, now restated on the lattice as <span class="term">solvability conditions</span><span class="def">constraints the equilibrium fᵢ⁰ must satisfy so that its moments match the true moments of fᵢ exactly, order by order</span>:</p>
+    <div class="eq">
+      <div class="eq-label">Moment constraints</div>
+      $$\rho=\sum_i f_i=\sum_i f_i^{0},\qquad\qquad \rho\mathbf u=\sum_i f_i\mathbf v_i=\sum_i f_i^{0}\mathbf v_i$$
+    </div>
+    <p>Substitute the BGK collision term into the Taylor-expanded streaming equation, and <span class="term">iterate</span><span class="def">replace fᵢ by its leading-order equilibrium value fᵢ⁰ inside the correction terms, since the deviation fᵢ − fᵢ⁰ is itself already O(∂) — a standard perturbative move that avoids solving for the unknown correction before it's needed</span>:</p>
+    <div class="eq">
+      <div class="eq-label">After substitution and iteration</div>
+      $$(\partial_t+\mathbf v_i\cdot\nabla)f_i^{0}-\left(\tau-\tfrac12\right)(\partial_t+\mathbf v_i\cdot\nabla)^2f_i^{0}=\Omega_i^{(2)}+O(\partial^3)$$
+    </div>
+    <p>Now sum this equation over every discrete direction i. Two things vanish in that sum: the second-order term, because it reduces to gradients of quantities the equilibrium distribution is already constructed to conserve, and Ω<sub>i</sub><sup>(2)</sup> itself, because collisions — by construction — cannot change total mass.</p>
+    <div class="note">
+      <span class="note-label">Two unrelated uses of "(2)" — worth not conflating</span>
+      Ω<sub>i</sub><sup>(2)</sup> here means the second-order term in the Chapman–Enskog expansion of the collision operator — an expansion order. It has nothing to do with f<sup>(2)</sup> from Part III (the two-particle correlation function in the BBGKY hierarchy). Same superscript, two completely different meanings, purely a notational coincidence between the two halves of this chapter.
+    </div>
+    <p>What survives is just the sum of the first term, which by the moment constraints above is exactly ∂ₜρ + ∇·(ρu):</p>
+    <div class="eq">
+      <div class="eq-label">Result — continuity, recovered from the lattice equation itself</div>
+      $$\boxed{\partial_t\rho+\nabla\cdot(\rho\mathbf u)=0}$$
+    </div>
+    <p>This is the same continuity equation Part IX reached from the continuous Boltzmann equation's zeroth moment — but reached here entirely on the discrete lattice, straight from the collide-and-stream update rule LBM actually runs. That the two routes — continuous kinetic theory taken to its hydrodynamic limit, and the discrete algorithm taken to its own — land on the identical equation is precisely the consistency check that makes LBM trustworthy as a real Navier–Stokes solver rather than a numerical trick that merely resembles one.</p>
+
+    <div class="note">
+      <span class="note-label">A compact version of a longer story</span>
+      This derivation compresses what Krüger et al.'s textbook (Ch. 4) does more carefully with a genuine two-timescale expansion — the time derivative itself gets split into ∂<sub>t</sub> = ε∂<sub>t</sub><sup>(1)</sup> + ε²∂<sub>t</sub><sup>(2)</sup> + ⋯, not just fᵢ, and the O(ε) and O(ε²) equations are solved and recombined separately before continuity and momentum fall out together. The single-line shorthand above gets to the same boxed result with far less machinery — legitimate as a compressed derivation, but worth knowing it's a shortcut through territory the full analysis treats order by order.
+    </div>
+
+    <hr class="rule" style="margin:2rem 0;">
+
+    <h3>BGK is not yet Lattice Boltzmann</h3>
+    <p>The continuous BGK equation still has continuous position and continuous velocity, f(x,v,t). LBM adds one more discretization: instead of every possible molecular velocity, choose a small finite set c₀, c₁, …, c_Q₋₁, and define f<sub>i</sub>(x,t) as the population moving in discrete direction cᵢ.</p>
+    <div class="eq">
+      <div class="eq-label">Lattice notation</div>
+      $$\text{D2Q9: } D=2 \text{ spatial dimensions}, \quad Q=9 \text{ discrete velocities}$$
+    </div>
+
+    <div class="fig-grid">
+      <div class="figure">
+        <span class="fig-tag">Diagram 4</span>
+        <img src="diagrams/d2q9-lattice.png" alt="D2Q9 lattice velocity diagram showing 8 color-coded arrows radiating from a center rest population, with weights labeled for each direction">
+        <div class="caption">D2Q9: 8 moving directions plus one rest population, color-coded by weight — axis directions (blue) and diagonal directions (coral) are weighted differently so the discrete set reproduces isotropic, direction-independent physics.</div>
+      </div>
+      <div class="figure">
+        <span class="fig-tag">Diagram 5</span>
+        <img src="diagrams/d3q27-lattice.png" alt="D3Q27 lattice cube diagram showing velocity vectors to face, edge, and corner neighbors">
+        <div class="caption">D3Q27: the 3D generalization — 26 neighbor directions (face, edge, corner) plus one rest population.</div>
+      </div>
+    </div>
+
+    <p>Each direction i carries a fixed weight w<sub>i</sub>, and the whole set is built so that its statistical moments match those of a true Maxwellian up to the order hydrodynamics needs. For D2Q9 specifically: w<sub>0</sub>=4/9 for the rest population, w<sub>1–4</sub>=1/9 for the four axis directions, w<sub>5–8</sub>=1/36 for the four diagonals — and the lattice speed of sound is fixed at c<sub>s</sub>²=⅓ (in lattice units, Δx=Δt=1). With those weights and velocities in hand, the actual <span class="term">discrete equilibrium distribution</span><span class="def">the lattice version of the Maxwellian from Part VII — a low-order polynomial in u rather than an exponential, built to reproduce the exact same low-order moments</span> — the thing every collision step relaxes toward — is:</p>
+    <div class="eq">
+      <div class="eq-label">Discrete equilibrium distribution</div>
+      $$f_i^{eq}(\mathbf x,t)=w_i\rho\left(1+\frac{\mathbf u\cdot\mathbf c_i}{c_s^2}+\frac{(\mathbf u\cdot\mathbf c_i)^2}{2c_s^4}-\frac{\mathbf u\cdot\mathbf u}{2c_s^2}\right)$$
+      <p style="margin:0.6rem 0 0;">This is a truncated polynomial expansion of the continuous Maxwellian in powers of u — not an approximation invented for convenience, but the specific truncation that keeps the moments matching correctly. Because it's only correct to O(u²), LBM built this way is formally valid only for weakly compressible flow — Mach number Ma=u/c<sub>s</sub> well below 1 — which is why LBM is a poor fit for transonic or supersonic problems without further modification.</p>
+    </div>
+
+    <p>Before committing to a fixed lattice, it helps to remember what's being approximated: a real particle's path is continuous and erratic, and the lattice only samples it at discrete points.</p>
+    <div class="figure">
+      <span class="fig-tag">Diagram 6</span>
+      <img src="diagrams/random-walk-lattice.png" alt="A grid with a jagged random walk path threading through several cells, illustrating a continuous trajectory sampled on a discrete lattice">
+      <div class="caption">The true molecular trajectory is the wandering path; the lattice of size δx is what actually gets tracked. LBM works because the statistics survive this coarsening.</div>
+    </div>
+
+    <h3>The algorithm</h3>
+    <div class="eq">
+      <div class="eq-label">1. Collision</div>
+      $$f_i^{*}=f_i-\frac{\Delta t}{\tau}(f_i-f_i^{eq})$$
+      <p style="margin:0.6rem 0 0;">Populations relax locally toward equilibrium, node by node.</p>
+    </div>
+    <div class="eq">
+      <div class="eq-label">2. Streaming</div>
+      $$f_i(\mathbf x+\mathbf c_i\Delta t,\,t+\Delta t)=f_i^{*}(\mathbf x,t)$$
+      <p style="margin:0.6rem 0 0;">Post-collision populations travel outward to neighboring lattice nodes.</p>
+    </div>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 7</span>
+      <img src="diagrams/collide-stream.png" alt="Two-panel diagram showing the collide step relaxing toward equilibrium and the stream step moving populations to a neighboring lattice node">
+      <div class="caption">The entire LBM update, in two steps, repeated every timestep at every node.</div>
+    </div>
+
+    <div class="chain">COLLIDE → STREAM → COLLIDE → STREAM → ⋯</div>
+    <p>Almost comically simple to code — and yet the collective behavior recovers continuum fluid mechanics. That's the charming trick at the heart of your subfield.</p>
+
+    <h3>Getting fluid variables back out</h3>
+    <p>At every node there are several fᵢ's, but the fluid is what's wanted. Take moments again — now as finite sums rather than continuous integrals:</p>
+    <div class="eq">
+      <div class="eq-label">Density and momentum, discretized</div>
+      $$\rho=\sum_i f_i \qquad\qquad \rho\mathbf u=\sum_i f_i\mathbf c_i$$
+    </div>
+    <p>This closes the circle: f(x,v,t) becomes fᵢ(x,t), and ∫f dv becomes Σᵢfᵢ. Velocity-space integrals became finite sums — that's precisely what the word <span class="term">lattice</span> is buying you.</p>
+
+    <h3>Why τ matters physically</h3>
+    <p>The relaxation time isn't merely a numerical knob — it determines how quickly nonequilibrium disturbances erase themselves, and therefore sets the fluid's viscosity directly:</p>
+    <div class="eq">
+      <div class="eq-label">Lattice viscosity (lattice units, Δt = 1)</div>
+      $$\nu=c_s^2\left(\tau-\tfrac12\right)$$
+      <p style="margin:0.6rem 0 0;">A second, less-visible number comes along for free: the <span class="term">bulk viscosity</span><span class="def">the fluid's resistance to pure compression, as opposed to shear — normally zero for a monatomic gas, but nonzero here as an artifact of the isothermal equation of state LBM uses</span> works out to ν<sub>B</sub> = ⅔ν. It doesn't appear explicitly in the collision rule, but it's baked into every standard isothermal LBM simulation whether or not it's ever mentioned.</p>
+    </div>
+    <div class="chain">τ → relaxation rate → nonequilibrium stress → ν → macroscopic viscosity</div>
+    <p>That's the same microscopic-to-macroscopic connection Chapman–Enskog establishes, now made numerically concrete and tunable.</p>
+
+    <h3>A subtlety: thermal vs. nonthermal energy</h3>
+    <p>It's tempting to assume the second velocity moment of f automatically gives the correct thermal energy of the fluid — it doesn't, in general, and this is a genuine caveat associated with <span class="term">Hiroshi Otomo's</span><span class="def">a researcher whose work addresses energy accounting and boundary treatment in LBM</span> work on the subject. Two quantities that look superficially similar are not the same thing:</p>
+    <div class="eq">
+      <div class="eq-label">Not the same quantity</div>
+      $$\sum_i f_i v_i^2 \;\neq\; \langle\delta x^2\rangle$$
+      <p style="margin:0.6rem 0 0;">The left side is a <span class="term">nonthermal energy</span><span class="def">a velocity-moment quantity that arises mechanically from the discrete velocity set and collision rule, but does not correspond to physical thermal motion</span> — an artifact of the discrete lattice's own structure — not the fluid's actual kinetic energy, and not the same object as the mean-squared displacement ⟨δx²⟩ that genuinely characterizes particle motion.</p>
+    </div>
+    <p>The correct thermal energy density instead comes from the properly normalized second moment:</p>
+    <div class="eq">
+      <div class="eq-label">Correct thermal energy density</div>
+      $$\int f v^2\,d\mathbf v = \rho\,\tfrac12 kT$$
+      <p style="margin:0.6rem 0 0;">This is the standard equipartition result — matching this moment exactly, rather than just approximately, is what a properly constructed thermal LBM scheme has to get right, and it's precisely where naive extensions of isothermal LBM can go subtly wrong.</p>
+    </div>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 8</span>
+      <img src="diagrams/msd-crossover.png" alt="Plot of mean squared displacement versus time showing a crossover from ballistic (t squared) scaling at short times to diffusive (linear in t) scaling at long times">
+      <div class="caption">The genuine displacement statistic, ⟨δx²⟩ vs. t: ballistic (∝t²) at short times, crossing over to diffusive (∝t) at long times — the actual random-walk behavior of the random-walk-on-lattice picture from earlier, now shown as a plot rather than a single trajectory. This is the real physical quantity the nonthermal-energy note above is warning not to confuse with a raw velocity moment.</div>
+    </div>
+  </div>
+
+  <!-- PART XI -->
+  <div class="part" id="part11">
+    <div class="part-eyebrow">Boundaries</div>
+    <h2>Where the collide-stream machine starts demanding paperwork</h2>
+    <p>At a solid wall, some population tries to stream into solid material — that's not physical, and something has to be done about it. The basic answer is <span class="term">bounce-back</span><span class="def">reflecting an incoming population straight back along the opposite lattice direction it arrived from</span>, which approximately imposes <span class="term">no-slip</span><span class="def">fluid velocity equals zero exactly at the wall — the standard physical condition for a viscous fluid touching a solid boundary</span> behavior.</p>
+
+    <p>The harder version of this problem — and the one Board 2 spends two separate plots on — is that the lattice is a rigid Cartesian grid, but the physical wall being modeled is usually smooth and curved. Read the two plots as a before/after pair.</p>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 9 — Plot A</span>
+      <img src="diagrams/boundary-plot-A-physical-domain.png" alt="Diagram showing the true smooth curved wall inside a fluid domain, with fluid nodes and solid nodes marked as scattered dots on either side of the curve">
+      <div class="caption"><strong>Plot A — the physical problem, as posed.</strong> A smooth curved wall (solid line) sits inside the fluid domain. Every lattice node near it is unambiguously either a fluid node or a solid node depending on which side of the true curve it falls on — this is the geometry you actually want to simulate, before the lattice has done anything to it.</div>
+    </div>
+
+    <div class="figure">
+      <span class="fig-tag">Diagram 9 — Plot B</span>
+      <img src="diagrams/boundary-plot-B-staircase.png" alt="Diagram showing the staircase approximation of the curved wall on a Cartesian lattice grid, with bounce-back arrows shown at two boundary links">
+      <div class="caption"><strong>Plot B — what the solver is actually stuck with.</strong> Because the lattice only has horizontal and vertical links, the smooth wall (dotted, carried over from Plot A) gets rounded onto the nearest grid lines — the gold staircase. At every step of that staircase, a population trying to stream through the wall is instead reflected straight back the way it came (the <span class="term">bounce-back</span><span class="def">reflecting an incoming population along the opposite lattice direction it arrived from, approximating no-slip</span> arrows). The physics is only ever as good as this staircase's resemblance to the true curve in Plot A.</div>
+    </div>
+
+    <p>Put the two together and the actual research problem becomes visible: naive bounce-back on the raw staircase gets the wall location right only to within one lattice spacing, which is a real, first-order error. This is exactly the gap Otomo's work — and curved/interpolated boundary schemes generally — closes: instead of snapping fully to the nearest grid line, they interpolate between the fluid and solid nodes straddling the true curve, recovering something much closer to Plot A's behavior while still only ever computing on Plot B's grid.</p>
+
+    <p>The interpolation itself is parameterized by a fractional distance, typically written <span class="term">q</span><span class="def">the fraction of a lattice link that lies between the last fluid node and the true wall — q=0 means the wall sits exactly on the fluid node, q=1 means it sits exactly on the solid node</span>, which controls how the reflected population gets corrected relative to plain bounce-back. The accuracy of the whole scheme is then naturally judged by how close the lattice actually tracks the true wall position relative to the grid spacing itself:</p>
+    <div class="eq">
+      <div class="eq-label">A displacement-accuracy measure</div>
+      $$a=\frac{\langle\delta x\rangle}{\Delta x}$$
+      <p style="margin:0.6rem 0 0;">The average positional error of the boundary representation, expressed as a fraction of one lattice spacing — the smaller this ratio, the closer Plot B's staircase tracks Plot A's true curve. This is the practical number a curved-boundary scheme is trying to drive toward zero.</p>
+    </div>
+
+    <p>More sophisticated schemes extend this same idea to moving walls, pressure boundaries, and inlets or outlets — but the underlying tension is always the one drawn across these two plots: an on-lattice method modeling an off-lattice world.</p>
+
+    <div class="figure">
+      <span class="fig-tag">Source — board 2</span>
+      <img src="images/board2.jpg" alt="Chalkboard showing D2Q9 and D3Q27 lattice diagrams, relaxation and transient plots, and boundary condition notes referencing Hiroshi Otomo">
+      <div class="caption">The lattice grids, relaxation curves, and boundary-condition notes as worked on the board — the numerical half of the chapter.</div>
+    </div>
+  </div>
+
+  <!-- Two roads -->
+  <div class="part" id="part12">
+    <div class="part-eyebrow">Synthesis</div>
+    <h2>One distinction worth making explicit</h2>
+    <p>Two different roads run through this chapter, and it's easy to fuse them into one without noticing.</p>
+    <div class="chain">Boltzmann → Chapman–Enskog → Navier–Stokes<br><span style="color:var(--ink-soft);font-size:0.85rem;">— why does kinetic theory produce fluid mechanics?</span></div>
+    <div class="chain">Boltzmann/BGK → discrete velocities → collide + stream → LBM<br><span style="color:var(--ink-soft);font-size:0.85rem;">— how do we exploit kinetic theory to simulate a fluid efficiently?</span></div>
+    <p>The lattice-gas history at the start of Part X is a variant of this second road, not a third one — it just arrives at the same discrete equation from the opposite direction, averaging a noisy automaton upward instead of discretizing the continuous Boltzmann equation downward. Both paths converge on the identical f<sub>i</sub>(x+v<sub>i</sub>,t+1) = f<sub>i</sub>(x,t) + Ω<sub>i</sub> equation, which is exactly why the chapter treats them as one road rather than two.</p>
+    <p>Chapman–Enskog then reappears a second time as the consistency check confirming that the chosen LBM scheme actually recovers the intended Navier–Stokes equations in its hydrodynamic limit.</p>
+  </div>
+
+  <!-- Skeleton -->
+  <div class="part endnote" id="part13">
+    <h2 style="color:var(--pine-deep);">The architecture, in ten seconds</h2>
+    <div class="figure">
+      <span class="fig-tag">Diagram 10</span>
+      <img src="diagrams/architecture-skeleton.png" alt="Full flowchart from Newton's laws through Liouville, BBGKY, Boltzmann, BGK, discrete velocities, and streaming down to Lattice Boltzmann, with a side branch to Navier-Stokes via Chapman-Enskog">
+      <div class="caption">The complete route, top to bottom, with the Navier–Stokes branch peeling off to the side.</div>
+    </div>
+    <p>Once this skeleton is fixed, the algebra stops looking like fourteen unrelated tricks. It's one continuous information-compression scheme — particles → distributions → a handful of moments — and LBM's entire cleverness is choosing to compute at the distribution level rather than attacking Navier–Stokes head-on.</p>
+    <a class="back-to-top" href="#top">↑ back to top</a>
+  </div>
+
+</article>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ],
+      throwOnError: false
+    });
+  });
+</script>
+</body>
+</html>
